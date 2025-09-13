@@ -39,38 +39,40 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-slate-900/90 backdrop-blur-md border-b border-cyan-500/30' 
+        ? 'bg-royal-dark/90 backdrop-blur-md border-b border-royal-red/30' 
         : 'bg-transparent'
     }`}>
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <nav className="max-w-7xl mx-auto px-6 py-6">
+        <div className="flex items-center justify-between">
           {/* Logo and Brand */}
-          <div className="flex items-center">
-            <span className="font-heading font-bold text-xl text-cyan-400">
-              NextGen AI BOTS Inc
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg border border-royal-cream flex items-center justify-center text-royal-cream font-playfair text-xl">
+              RF
+            </div>
+            <div className="text-royal-cream font-semibold font-inter">
+              NextGen AI BOTS
+            </div>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center gap-6 text-sm text-royal-cream/80">
             {navigation.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-medium transition-all duration-200 hover:text-cyan-300 relative ${
+                className={`font-inter transition-all duration-200 hover:text-royal-red relative ${
                   activeSection === item.href.substring(1)
-                    ? 'text-cyan-400'
-                    : 'text-gray-300'
+                    ? 'text-royal-red'
+                    : 'text-royal-cream/80'
                 }`}
               >
                 {item.name}
                 {activeSection === item.href.substring(1) && (
                   <motion.div
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-cyan-400"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-royal-red"
                     layoutId="activeTab"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -81,11 +83,10 @@ export function Navbar() {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center space-x-4">
-
+          <div className="flex items-center gap-4">
             <Button
               asChild
-              className="hidden md:inline-flex bg-cyan-500 hover:bg-cyan-400 text-white rounded-lg shadow-lg shadow-cyan-500/30 transition-all duration-200"
+              className="hidden md:inline-flex royal-button-secondary px-4 py-2 rounded-full border-2 border-royal-cream text-royal-cream font-semibold hover:bg-royal-cream/5 transition"
             >
               <a href="#vex">Join a VEX Team</a>
             </Button>
@@ -93,7 +94,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-gray-300 hover:text-cyan-400"
+              className="md:hidden text-royal-cream hover:text-royal-red"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -110,7 +111,7 @@ export function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden"
             >
-              <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-900/95 backdrop-blur-md border-t border-cyan-500/30">
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-royal-dark/95 backdrop-blur-md border-t border-royal-red/30">
                 {navigation.map((item) => (
                   <a
                     key={item.name}
@@ -118,14 +119,14 @@ export function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       activeSection === item.href.substring(1)
-                        ? 'text-cyan-400 bg-cyan-500/10'
-                        : 'text-gray-300 hover:text-cyan-300 hover:bg-slate-800'
+                        ? 'text-royal-red bg-royal-red/10'
+                        : 'text-royal-cream/80 hover:text-royal-red hover:bg-royal-dark/50'
                     }`}
                   >
                     {item.name}
                   </a>
                 ))}
-                <Button asChild className="w-full mt-4 bg-cyan-500 hover:bg-cyan-400 text-white shadow-lg shadow-cyan-500/30">
+                <Button asChild className="w-full mt-4 royal-button-primary px-4 py-2 rounded-full">
                   <a href="#vex" onClick={() => setIsOpen(false)}>
                     Join a VEX Team
                   </a>

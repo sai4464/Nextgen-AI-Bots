@@ -10,16 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        heading: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
+        playfair: ['Playfair Display', 'serif'],
+        inter: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Playfair Display', 'serif'],
       },
       colors: {
-        electric: '#22D3EE', // cyan-400
-        cyan: '#06B6D4',
-        neon: {
-          cyan: '#22D3EE',
-          purple: '#C084FC',
+        royal: {
+          dark: '#1a1a1a',
+          dark2: '#0f0f0f',
+          cream: '#F5F2EB',
+          red: '#D72638',
+          beige: '#9C8C74'
         },
+        // Keep existing shadcn colors
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -55,9 +59,13 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
       },
       backgroundImage: {
+        'royal-texture': "url('/assets/royal-bg-texture.png')",
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'circuit-pattern': `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2306B6D4' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='53' cy='53' r='1'/%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+      },
+      boxShadow: {
+        'card': '0 12px 30px rgba(0,0,0,0.6)',
+        'card-soft': '0 6px 18px rgba(0,0,0,0.45)'
       },
       borderRadius: {
         lg: 'var(--radius)',

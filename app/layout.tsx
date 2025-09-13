@@ -1,19 +1,23 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
+const playfairDisplay = Playfair_Display({ 
+  subsets: ['latin'], 
+  variable: '--font-playfair',
+  weight: ['400', '700', '900']
+});
 
 export const metadata: Metadata = {
-  title: 'NextGen AI BOTS Inc — Robotics & AI for Youth',
+  title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
   description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning. Join our inclusive STEM programs and camps.',
   keywords: 'robotics education, VEX robotics, AI for youth, STEM programs, nonprofit education',
   authors: [{ name: 'NextGen AI BOTS Inc' }],
   openGraph: {
-    title: 'NextGen AI BOTS Inc — Robotics & AI for Youth',
+    title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
     description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning.',
     url: 'https://nextgenaibots.org',
     siteName: 'NextGen AI BOTS Inc',
@@ -30,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NextGen AI BOTS Inc — Robotics & AI for Youth',
+    title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
     description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning.',
     images: ['/og.jpg'],
   },
@@ -44,6 +48,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;600;700&display=swap" 
+          rel="stylesheet" 
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -62,11 +70,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${playfairDisplay.variable} font-inter antialiased bg-royal-dark text-royal-cream`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <Providers>

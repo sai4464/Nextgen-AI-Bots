@@ -1,10 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
+    /* Royal Flush Theme Colors */
+    --royal-dark: #1a1a1a;
+    --royal-dark-2: #0f0f0f;
+    --royal-cream: #F5F2EB;
+    --royal-red: #D72638;
+    --royal-beige: #9C8C74;
+
     /* Surfaces */
-    --background: 222.2 84% 4.9%;   /* slate-950-ish */
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
     --card: 222.2 70% 6%;
@@ -14,10 +22,10 @@
     --popover-foreground: 210 40% 98%;
 
     /* Brand */
-    --primary: 189 94% 57%;         /* neon cyan */
+    --primary: 189 94% 57%;
     --primary-foreground: 222.2 84% 4.9%;
 
-    --accent: 271 78% 60%;          /* electric purple */
+    --accent: 271 78% 60%;
     --accent-foreground: 210 40% 98%;
 
     /* UI */
@@ -33,7 +41,6 @@
   }
 
   .dark {
-    /* Keep same hues; dark just uses them on dark bg already */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 70% 6%;
@@ -52,4 +59,112 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 189 94% 57%;
   }
+}
+
+/* Royal Flush Custom Styles */
+body {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(215, 38, 56, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(156, 140, 116, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(245, 242, 235, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Custom scrollbar for royal theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9C8C74;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D72638;
+}
+
+/* Typography enhancements */
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Card hover effects */
+.royal-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(245, 242, 235, 0.1);
+}
+
+.royal-card:hover {
+  border-color: rgba(215, 38, 56, 0.3);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
+}
+
+/* Button styles */
+.royal-button-primary {
+  background: #D72638;
+  color: #F5F2EB;
+  border: 2px solid #D72638;
+  transition: all 0.3s ease;
+}
+
+.royal-button-primary:hover {
+  background: transparent;
+  color: #D72638;
+  border-color: #D72638;
+}
+
+.royal-button-secondary {
+  background: transparent;
+  color: #F5F2EB;
+  border: 2px solid #F5F2EB;
+  transition: all 0.3s ease;
+}
+
+.royal-button-secondary:hover {
+  background: rgba(245, 242, 235, 0.1);
+  border-color: #D72638;
+  color: #D72638;
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.1) rotate(180deg); }
+}
+
+.sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+/* Card floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(var(--rotation)); }
+  50% { transform: translateY(-10px) rotate(var(--rotation)); }
+}
+
+.floating-card {
+  animation: float 3s ease-in-out infinite;
 }

@@ -55,19 +55,19 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-slate-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="py-16 bg-royal-dark">
+      <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-gray-100 mb-4">
+          <h2 className="text-3xl font-playfair text-royal-cream mb-4">
             Contact Us
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-royal-cream/80 max-w-2xl mx-auto">
             Ready to get started? Have questions? We'd love to hear from you!
           </p>
         </motion.div>
@@ -78,46 +78,46 @@ export function Contact() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <Card className="bg-slate-950 border-2 border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300">
-            <CardHeader>
+          <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl p-6 shadow-card-soft hover:shadow-card transition-all duration-300">
+            <CardHeader className="p-0 mb-6">
               <CardTitle className="flex items-center space-x-2">
-                <Mail className="w-5 h-5 text-cyan-400" />
-                <span className="text-gray-100">Get in Touch</span>
+                <Mail className="w-5 h-5 text-royal-red" />
+                <span className="text-royal-cream font-playfair">Get in Touch</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-gray-200">Name *</Label>
+                    <Label htmlFor="name" className="text-royal-cream/80">Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       required
-                      className="bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 text-gray-100 placeholder:text-gray-400"
+                      className="bg-royal-dark border border-royal-cream/20 focus:border-royal-red text-royal-cream placeholder:text-royal-cream/50"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-200">Email *</Label>
+                    <Label htmlFor="email" className="text-royal-cream/80">Email *</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
                       required
-                      className="bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 text-gray-100 placeholder:text-gray-400"
+                      className="bg-royal-dark border border-royal-cream/20 focus:border-royal-red text-royal-cream placeholder:text-royal-cream/50"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-gray-200">Role</Label>
+                  <Label htmlFor="role" className="text-royal-cream/80">Role</Label>
                   <Select value={formData.role} onValueChange={(value) => handleInputChange('role', value)}>
-                    <SelectTrigger className="bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 text-gray-100">
+                    <SelectTrigger className="bg-royal-dark border border-royal-cream/20 focus:border-royal-red text-royal-cream">
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border border-slate-600">
+                    <SelectContent className="bg-royal-dark border border-royal-cream/20">
                       <SelectItem value="student">Student</SelectItem>
                       <SelectItem value="parent">Parent</SelectItem>
                       <SelectItem value="mentor">Mentor/Volunteer</SelectItem>
@@ -129,14 +129,14 @@ export function Contact() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message" className="text-gray-200">Message *</Label>
+                  <Label htmlFor="message" className="text-royal-cream/80">Message *</Label>
                   <Textarea
                     id="message"
                     value={formData.message}
                     onChange={(e) => handleInputChange('message', e.target.value)}
                     required
                     rows={6}
-                    className="bg-slate-800 border-2 border-slate-600 focus:border-cyan-400 text-gray-100 placeholder:text-gray-400 resize-none"
+                    className="bg-royal-dark border border-royal-cream/20 focus:border-royal-red text-royal-cream placeholder:text-royal-cream/50 resize-none"
                     placeholder="Tell us about your interest in our programs, how you'd like to get involved, or any questions you have..."
                   />
                 </div>
@@ -144,7 +144,7 @@ export function Contact() {
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-white text-lg py-3 group shadow-lg shadow-cyan-500/30 transition-all duration-200"
+                  className="w-full royal-button-primary bg-royal-red hover:bg-royal-red/90 text-royal-cream text-lg py-3 group shadow-lg shadow-royal-red/30 transition-all duration-200"
                 >
                   {isSubmitting ? (
                     "Sending..."
@@ -157,13 +157,13 @@ export function Contact() {
                 </Button>
               </form>
 
-              <div className="mt-8 p-6 bg-slate-800/50 rounded-lg text-center border border-slate-700">
-                <p className="text-sm text-gray-400 mb-2">
+              <div className="mt-8 p-6 bg-royal-dark/50 rounded-lg text-center border border-royal-cream/20">
+                <p className="text-sm text-royal-cream/70 mb-2">
                   Prefer email? You can also reach us directly at:
                 </p>
                 <a 
                   href="mailto:info@nextgenaibots.org"
-                  className="text-cyan-400 font-medium hover:text-cyan-300 hover:underline transition-colors"
+                  className="text-royal-red font-medium hover:text-royal-red/80 hover:underline transition-colors"
                 >
                   info@nextgenaibots.org
                 </a>
