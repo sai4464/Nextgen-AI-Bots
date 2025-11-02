@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const navigation = [
-  { name: 'About', href: '#about' },
-  { name: 'Mission', href: '#mission' },
-  { name: 'Programs', href: '#programs' },
-  { name: 'VEX Robotics', href: '#vex' },
-  { name: 'Get Involved', href: '#get-involved' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'About', href: '/about' },
+  { name: 'Mission', href: '/mission' },
+  { name: 'Programs', href: '/programs' },
+  { name: 'VEX Robotics', href: '/vex' },
+  { name: 'Get Involved', href: '/get-involved' },
+  { name: 'Contact', href: '/contact' },
 ];
 
 export function Navbar() {
@@ -48,14 +49,17 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg border border-royal-cream flex items-center justify-center text-royal-cream font-playfair text-xl">
-              RF
-            </div>
+          <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image 
+              src="/assets/nonprofit_logo-removebg-preview.png" 
+              alt="NextGen AI Bots Logo" 
+              width={48} 
+              height={48}
+            />
             <div className="text-royal-cream font-semibold font-inter">
               NextGen AI BOTS
             </div>
-          </div>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6 text-sm text-royal-cream/80">
@@ -88,7 +92,7 @@ export function Navbar() {
               asChild
               className="hidden md:inline-flex royal-button-secondary px-4 py-2 rounded-full border-2 border-royal-cream text-royal-cream font-semibold hover:bg-royal-cream/5 transition"
             >
-              <a href="#vex">Join a VEX Team</a>
+              <a href="/contact">Contact Us</a>
             </Button>
 
             <Button
@@ -127,8 +131,8 @@ export function Navbar() {
                   </a>
                 ))}
                 <Button asChild className="w-full mt-4 royal-button-primary px-4 py-2 rounded-full">
-                  <a href="#vex" onClick={() => setIsOpen(false)}>
-                    Join a VEX Team
+                  <a href="/contact" onClick={() => setIsOpen(false)}>
+                    Contact Us
                   </a>
                 </Button>
               </div>

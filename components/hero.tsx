@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import DynamicFrameLayout from "./DynamicFrameLayout";
 
 export function Hero() {
   return (
@@ -14,15 +16,30 @@ export function Hero() {
       {/* Subtle vignette effect */}
       <div className="absolute inset-0 bg-gradient-to-t from-royal-dark-2/50 via-transparent to-royal-dark-2/30 pointer-events-none" />
       
+      {/* Logo in top left */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Image 
+            src="/assets/nonprofit_logo-removebg-preview.png" 
+            alt="NextGen AI Bots Logo" 
+            width={48} 
+            height={48}
+          />
+          <div className="text-royal-cream font-semibold font-inter">
+            NextGen AI BOTS
+          </div>
+        </Link>
+      </div>
+      
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center h-[80vh]">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.6 }}
-            className="md:col-span-7 space-y-6"
+            className="md:col-span-5 space-y-6"
           >
             <motion.h1 
               className="font-playfair text-5xl md:text-6xl leading-tight text-royal-cream"
@@ -72,87 +89,15 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Wider Card with Front Cover Image */}
+          {/* Right Content - Dynamic Frame Layout */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="md:col-span-5 flex justify-center items-center relative"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="md:col-span-7 h-full"
           >
-            <div className="relative w-[380px] h-[600px]">
-              {/* Vertical Card Border */}
-              <div className="absolute inset-0 rounded-3xl border-4 border-royal-cream/40 shadow-card bg-royal-cream/5"></div>
-              
-              {/* Inner Card Border */}
-              <div className="absolute inset-4 rounded-2xl border-2 border-royal-red/60"></div>
-
-              {/* Your Front Cover Image - Wider */}
-              <motion.div
-                className="absolute inset-6 rounded-xl overflow-hidden shadow-card"
-                animate={{ y: [-5, 5, -5] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <Image
-                  src="/assets/frontcover.png"
-                  alt="NextGen AI BOTS front cover featuring robotics and AI education"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </motion.div>
-
-              {/* Decorative Corner Elements */}
-              <motion.div
-                className="absolute -top-2 -left-2 w-8 h-8 border-2 border-royal-red rounded-full bg-royal-red/20"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div
-                className="absolute -top-2 -right-2 w-8 h-8 border-2 border-royal-red rounded-full bg-royal-red/20"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div
-                className="absolute -bottom-2 -left-2 w-8 h-8 border-2 border-royal-red rounded-full bg-royal-red/20"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div
-                className="absolute -bottom-2 -right-2 w-8 h-8 border-2 border-royal-red rounded-full bg-royal-red/20"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-
-              {/* Sparkles around the card */}
-              <motion.img 
-                src="/assets/sparkle.svg" 
-                alt="" 
-                aria-hidden="true" 
-                className="absolute -left-8 top-16 w-12 h-12 opacity-80 sparkle"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              />
-              
-              <motion.img 
-                src="/assets/sparkle.svg" 
-                alt="" 
-                aria-hidden="true" 
-                className="absolute -right-8 bottom-16 w-10 h-10 opacity-70 sparkle"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-
-              {/* Floral decorative element */}
-              <motion.img 
-                src="/assets/floral-outline.svg" 
-                alt="" 
-                aria-hidden="true" 
-                className="absolute -right-12 bottom-0 w-40 opacity-60"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </div>
+            <DynamicFrameLayout />
           </motion.div>
         </div>
       </div>
