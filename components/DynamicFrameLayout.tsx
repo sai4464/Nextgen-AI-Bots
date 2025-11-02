@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { FrameComponent } from "./FrameComponent"
 
@@ -123,8 +123,25 @@ export default function DynamicFrameLayout() {
   const [hovered, setHovered] = useState<{ row: number; col: number } | null>(null)
   const [hoverSize, setHoverSize] = useState(6)
   const [gapSize, setGapSize] = useState(4)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile device
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768)
+      }
+      checkMobile()
+      window.addEventListener('resize', checkMobile)
+      return () => window.removeEventListener('resize', checkMobile)
+    }
+  }, [])
 
   const getRowSizes = () => {
+    // On mobile, just return static grid
+    if (isMobile) {
+      return "1fr 1fr"
+    }
     if (hovered === null) {
       return "1fr 1fr"
     }
@@ -135,6 +152,10 @@ export default function DynamicFrameLayout() {
   }
 
   const getColSizes = () => {
+    // On mobile, just return static grid
+    if (isMobile) {
+      return "1fr 1fr 1fr"
+    }
     if (hovered === null) {
       return "1fr 1fr 1fr"
     }
@@ -159,7 +180,7 @@ export default function DynamicFrameLayout() {
           gridTemplateRows: getRowSizes(),
           gridTemplateColumns: getColSizes(),
           gap: `${gapSize}px`,
-          transition: "grid-template-rows 0.4s ease, grid-template-columns 0.4s ease",
+          transition: isMobile ? "none" : "grid-template-rows 0.4s ease, grid-template-columns 0.4s ease",
         }}
       >
         {frames.map((frame) => {
@@ -171,8 +192,8 @@ export default function DynamicFrameLayout() {
             <motion.div
               key={frame.id}
               className="relative"
-              onMouseEnter={() => setHovered({ row, col })}
-              onMouseLeave={() => setHovered(null)}
+              onMouseEnter={() => !isMobile && setHovered({ row, col })}
+              onMouseLeave={() => !isMobile && setHovered(null)}
             >
               <FrameComponent
                 title={frame.title}

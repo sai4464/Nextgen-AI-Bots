@@ -32,7 +32,7 @@ export function Hero() {
       </div>
       
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center h-[80vh]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[80vh] md:h-[80vh]">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -95,7 +95,7 @@ export function Hero() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="md:col-span-7 h-full"
+            className="md:col-span-7 h-full min-h-[600px] md:min-h-0"
           >
             <DynamicFrameLayout />
           </motion.div>
