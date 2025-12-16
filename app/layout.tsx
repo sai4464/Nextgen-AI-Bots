@@ -12,12 +12,12 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
+  title: 'NextGen AI BOTS Inc — Robotics & AI',
   description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning. Join our inclusive STEM programs and camps.',
   keywords: 'robotics education, VEX robotics, AI for youth, STEM programs, nonprofit education',
   authors: [{ name: 'NextGen AI BOTS Inc' }],
   openGraph: {
-    title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
+    title: 'NextGen AI BOTS Inc — Robotics & AI',
     description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning.',
     url: 'https://nextgenaibots.org',
     siteName: 'NextGen AI BOTS Inc',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NextGen AI BOTS Inc — Royal Flush Robotics & AI',
+    title: 'NextGen AI BOTS Inc — Robotics & AI',
     description: 'Empowering the next generation through hands-on robotics education, VEX competitions, and AI learning.',
     images: ['/og.jpg'],
   },

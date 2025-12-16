@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Mail, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -105,7 +106,24 @@ export default function ContactPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <Tabs defaultValue="form" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6 bg-royal-dark/50 border border-royal-cream/20">
+                    <TabsTrigger 
+                      value="form" 
+                      className="data-[state=active]:bg-royal-red data-[state=active]:text-royal-cream text-royal-cream/80"
+                    >
+                      Contact Form
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="email" 
+                      className="data-[state=active]:bg-royal-red data-[state=active]:text-royal-cream text-royal-cream/80"
+                    >
+                      Email Us
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="form" className="mt-0">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-royal-cream/80">Name *</Label>
@@ -174,19 +192,40 @@ export default function ContactPage() {
                       </>
                     )}
                   </Button>
-                </form>
-
-                <div className="mt-8 p-6 bg-royal-dark/50 rounded-lg text-center border border-royal-cream/20">
-                  <p className="text-sm text-royal-cream/70 mb-2">
-                    Prefer email? You can also reach us directly at:
-                  </p>
-                  <a 
-                    href="mailto:info@nextgenaibots.org"
-                    className="text-royal-red font-medium hover:text-royal-red/80 hover:underline transition-colors"
-                  >
-                    info@nextgenaibots.org
-                  </a>
-                </div>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="email" className="mt-0">
+                    <div className="space-y-6">
+                      <div className="p-6 bg-royal-dark/50 rounded-lg border border-royal-cream/20 text-center">
+                        <Mail className="w-12 h-12 text-royal-red mx-auto mb-4" />
+                        <h3 className="text-xl font-playfair text-royal-cream mb-2">
+                          Send us an email
+                        </h3>
+                        <p className="text-royal-cream/70 mb-4">
+                          Prefer to email us directly? We'd love to hear from you!
+                        </p>
+                        <a 
+                          href="mailto:info@nextgenaibots.org"
+                          className="inline-flex items-center gap-2 text-royal-red font-medium hover:text-royal-red/80 hover:underline transition-colors text-lg"
+                        >
+                          <Mail className="w-5 h-5" />
+                          info@nextgenaibots.org
+                        </a>
+                      </div>
+                      
+                      <div className="p-6 bg-royal-dark/30 rounded-lg border border-royal-cream/10">
+                        <h4 className="text-royal-cream font-semibold mb-3">What to include in your email:</h4>
+                        <ul className="space-y-2 text-royal-cream/70 text-sm">
+                          <li>• Your name and contact information</li>
+                          <li>• Your role (student, parent, mentor, etc.)</li>
+                          <li>• How you'd like to get involved</li>
+                          <li>• Any questions you have</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </motion.div>

@@ -4,33 +4,17 @@ import { Footer } from '@/components/footer';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Heart, Handshake, ArrowRight } from 'lucide-react';
+import { Heart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const involvement = [
   {
-    icon: Users,
-    title: "Students",
-    description: "Ready to dive into robotics and AI? Join one of our VEX teams and start your journey into STEM innovation.",
-    cta: "Join a VEX Team",
-    href: "/contact",
-    color: "royal-red"
-  },
-  {
-    icon: Handshake,
-    title: "Mentors & Volunteers",
-    description: "Share your expertise and passion for technology by mentoring the next generation of innovators.",
-    cta: "Volunteer with us",
-    href: "/contact",
-    color: "royal-beige"
-  },
-  {
     icon: Heart,
     title: "Sponsors & Donors",
-    description: "Support scholarships, team sponsorships, and provide equal opportunities for all students to learn STEM.",
+    description: "Support team sponsorships and provide equal opportunities for all students to learn STEM.",
     cta: "Support our mission",
-    href: "/contact",
+    href: "/donations",
     color: "royal-red"
   }
 ];
@@ -70,7 +54,7 @@ export default function GetInvolvedPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="grid md:grid-cols-1 max-w-md mx-auto gap-8 mb-12">
             {involvement.map((item, index) => (
               <motion.div
                 key={item.title}
@@ -163,14 +147,14 @@ export default function GetInvolvedPage() {
                     Support Our Mission
                   </h3>
                   <p className="text-royal-cream/75 leading-relaxed">
-                    Your donation helps us provide scholarships, sponsor teams, and ensure that every student has access to quality STEM education regardless of their background. Together, we can break down barriers and create opportunities for the next generation of innovators.
+                    Your donation helps us sponsor teams and ensure that every student has access to quality STEM education regardless of their background. Together, we can break down barriers and create opportunities for the next generation of innovators.
                   </p>
                   <Button 
                     asChild
                     size="lg" 
                     className="royal-button-primary bg-royal-red hover:bg-royal-red/90 text-royal-cream px-8 shadow-lg shadow-royal-red/30 transition-all duration-200"
                   >
-                    <a href="/contact">Donate Now</a>
+                    <a href="/donations">Donate Now</a>
                   </Button>
                 </div>
               </CardContent>

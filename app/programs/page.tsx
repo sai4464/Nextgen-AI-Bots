@@ -3,7 +3,7 @@
 import { Footer } from '@/components/footer';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Code, Users, GraduationCap, Trophy, Calendar, Clock } from 'lucide-react';
+import { Code, Users, GraduationCap, Trophy, Calendar, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -114,10 +114,42 @@ export default function ProgramsPage() {
                 <Calendar className="w-6 h-6 text-royal-red" />
                 <h2 className="text-2xl font-playfair text-royal-cream">Upcoming Events</h2>
               </div>
-              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl p-6">
-                <p className="text-royal-cream/75 text-center py-8">
-                  Stay tuned for upcoming events and workshops!
-                </p>
+              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300">
+                <CardContent className="p-4">
+                  <div className="flex flex-col md:flex-row gap-4 items-start">
+                    <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3">
+                      <Image
+                        src="/assets/wintercampper.png"
+                        alt="NextGen Winter Camp"
+                        width={400}
+                        height={300}
+                        className="object-contain w-full h-auto max-h-52"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-playfair font-bold text-royal-cream mb-2">
+                        NextGen Winter Camp
+                      </h3>
+                      <p className="text-sm text-royal-cream/85 mb-3">
+                        Learn VEX Robotics with NextGen AI Bots
+                      </p>
+                      <div className="space-y-1.5 text-sm text-royal-cream/85">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>January 2nd - January ##</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>5th-8th graders</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>3327 Sleeping Meadow Way</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
             </motion.div>
 
@@ -132,10 +164,39 @@ export default function ProgramsPage() {
                 <Clock className="w-6 h-6 text-royal-beige" />
                 <h2 className="text-2xl font-playfair text-royal-cream">Past Events</h2>
               </div>
-              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl p-6">
-                <p className="text-royal-cream/75 text-center py-8">
-                  Check back soon for highlights from our past events.
-                </p>
+              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300">
+                <CardContent className="p-4">
+                  <div className="flex flex-col md:flex-row gap-4 items-start">
+                    <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3">
+                      <Image
+                        src="/assets/STEAMsat.png"
+                        alt="STEAM Saturday Event"
+                        width={400}
+                        height={300}
+                        className="object-contain w-full h-auto max-h-52"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-playfair font-bold text-royal-cream mb-2">
+                        STEAM Saturday
+                      </h3>
+                      <div className="space-y-1.5 text-sm text-royal-cream/85">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>Saturday, November 8th, 2025</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>10:30AM – 12:00PM</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-royal-red flex-shrink-0" />
+                          <span>Dougherty Station Library</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
             </motion.div>
           </div>

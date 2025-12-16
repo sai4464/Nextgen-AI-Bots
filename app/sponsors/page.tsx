@@ -47,10 +47,10 @@ export default function SponsorsPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl shadow-card-soft hover:shadow-card transition-all duration-300 overflow-hidden">
+            <div className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl shadow-card-soft hover:shadow-card transition-all duration-300 overflow-hidden p-0">
               <iframe
-                src="/assets/SPONSORSHIP PACKET.pdf"
-                className="w-full h-[800px] border-0"
+                src="/assets/SPONSORSHIP PACKET.pdf#toolbar=0&navpanes=0&scrollbar=0"
+                className="w-full h-[800px] border-0 block"
                 title="Sponsorship Packet"
               />
             </div>

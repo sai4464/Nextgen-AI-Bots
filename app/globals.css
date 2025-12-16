@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Royal Flush Theme Colors */
+    /* Theme Colors */
     --royal-dark: #1a1a1a;
     --royal-dark-2: #0f0f0f;
     --royal-cream: #F5F2EB;
@@ -61,7 +61,7 @@
   }
 }
 
-/* Royal Flush Custom Styles */
+/* Custom Styles */
 body {
   background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
   background-attachment: fixed;

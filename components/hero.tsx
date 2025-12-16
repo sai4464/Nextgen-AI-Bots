@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import DynamicFrameLayout from "./DynamicFrameLayout";
@@ -10,7 +9,7 @@ import DynamicFrameLayout from "./DynamicFrameLayout";
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-royal-dark">
-      {/* Royal Flush Background Texture */}
+      {/* Background Texture */}
       <div className="absolute inset-0 bg-gradient-to-br from-royal-dark via-royal-dark-2 to-royal-dark opacity-90" />
       
       {/* Subtle vignette effect */}
@@ -72,19 +71,9 @@ export function Hero() {
             >
               <Button 
                 asChild 
-                className="royal-button-secondary inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-royal-cream text-royal-cream font-semibold hover:shadow-lg transition"
-              >
-                <a href="#vex" className="flex items-center justify-center">
-                  Join a VEX Team
-                  <ArrowRight className="w-5 h-5" />
-                </a>
-              </Button>
-              
-              <Button 
-                asChild 
                 className="royal-button-primary inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-royal-red bg-royal-red text-white font-semibold hover:brightness-105 transition"
               >
-                <a href="#get-involved">Donate</a>
+                <a href="/donations">Donate</a>
               </Button>
             </motion.div>
           </motion.div>

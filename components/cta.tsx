@@ -19,7 +19,7 @@ export function CTA() {
               Join the next generation of robotics innovators
             </h3>
             <p className="text-royal-cream/80">
-              Help fund workshops, scholarships, and competition fees.
+              Help fund workshops, equipment, and competition fees.
             </p>
           </div>
 
@@ -28,13 +28,7 @@ export function CTA() {
               asChild
               className="royal-button-primary px-6 py-3 rounded-full bg-royal-red text-royal-cream font-semibold hover:brightness-105 transition"
             >
-              <a href="#get-involved">Donate</a>
-            </Button>
-            <Button 
-              asChild
-              className="royal-button-secondary px-6 py-3 rounded-full border border-royal-cream text-royal-cream hover:bg-royal-cream/5 transition"
-            >
-              <a href="#vex">Join a VEX Team</a>
+              <a href="/donations">Donate</a>
             </Button>
           </div>
         </motion.div>

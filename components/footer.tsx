@@ -17,10 +17,7 @@ export function Footer() {
           className="flex items-center justify-between text-sm text-royal-cream/70"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg border border-royal-cream/30 flex items-center justify-center text-royal-cream font-playfair text-sm">
-              RF
-            </div>
-            <div>© NextGen AI BOTS • Royal Flush theme</div>
+            <div>© NextGen AI BOTS</div>
           </div>
           
           <div className="flex items-center gap-4">

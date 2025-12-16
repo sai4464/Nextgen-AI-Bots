@@ -13,6 +13,7 @@ interface Frame {
   title: string
   href: string
   gifUrl?: string  // Add this for GIF placeholder
+  backgroundImage?: string  // Background image for expanded state
   defaultPos: { x: number; y: number; w: number; h: number }
   corner: string
   edgeHorizontal: string
@@ -31,6 +32,7 @@ const initialFrames: Frame[] = [
     title: "Mission",
     href: "/mission",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/child.png",
     defaultPos: { x: 0, y: 0, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -46,6 +48,7 @@ const initialFrames: Frame[] = [
     title: "Sponsors",
     href: "/sponsors",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/nextteam.jpg",
     defaultPos: { x: 4, y: 0, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -61,6 +64,7 @@ const initialFrames: Frame[] = [
     title: "Programs",
     href: "/programs",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/programs.JPG",
     defaultPos: { x: 8, y: 0, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -76,6 +80,7 @@ const initialFrames: Frame[] = [
     title: "NextGen Team",
     href: "/vex",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/teamcubed.JPG",
     defaultPos: { x: 0, y: 4, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -91,6 +96,7 @@ const initialFrames: Frame[] = [
     title: "Get Involved",
     href: "/get-involved",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/involved.jpg",
     defaultPos: { x: 4, y: 4, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -106,6 +112,7 @@ const initialFrames: Frame[] = [
     title: "Contact",
     href: "/contact",
     gifUrl: "",  // Add your GIF URL here later
+    backgroundImage: "/assets/beautybot.JPG",
     defaultPos: { x: 8, y: 4, w: 4, h: 4 },
     corner: "",
     edgeHorizontal: "",
@@ -199,6 +206,7 @@ export default function DynamicFrameLayout() {
                 title={frame.title}
                 href={frame.href}
                 gifUrl={frame.gifUrl}
+                backgroundImage={frame.backgroundImage}
                 width="100%"
                 height="100%"
                 className="absolute inset-0"

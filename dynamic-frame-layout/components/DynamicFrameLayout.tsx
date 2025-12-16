@@ -194,12 +194,7 @@ export default function DynamicFrameLayout() {
   }
 
   const updateCodebase = () => {
-    console.log("Updating codebase with current values:")
-    console.log("Hover Size:", hoverSize)
-    console.log("Gap Size:", gapSize)
-    console.log("Frames:", frames)
-    // Here you would typically make an API call to update the codebase
-    // For now, we'll just log the values
+    // Update codebase with current values
   }
 
   return (

@@ -1,11 +1,13 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 interface FrameComponentProps {
   title: string
   href: string
   gifUrl?: string
+  backgroundImage?: string
   width: number | string
   height: number | string
   className?: string
@@ -29,6 +31,7 @@ export function FrameComponent({
   title,
   href,
   gifUrl,
+  backgroundImage,
   width,
   height,
   className = "",
@@ -82,9 +85,30 @@ export function FrameComponent({
       <div className={`absolute inset-0 bg-royal-dark border-2 rounded-lg overflow-hidden transition-all duration-300 ${
         isHovered ? "border-royal-red shadow-2xl shadow-royal-red/30" : "border-royal-cream/20 hover:border-royal-red"
       }`}>
+        {/* Background Image - fades in when hovering over the box */}
+        {backgroundImage && (
+          <div 
+            className="absolute inset-0 z-0"
+            style={{
+              opacity: isLocalHovered ? 1 : 0,
+              transition: "opacity 0.5s ease-in-out",
+              pointerEvents: "none"
+            }}
+          >
+            <img
+              src={backgroundImage}
+              alt={title}
+              className="w-full h-full object-cover"
+              style={{ objectFit: 'cover' }}
+            />
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-royal-dark/40"></div>
+          </div>
+        )}
+        
         {/* Show GIF if available, otherwise show placeholder */}
         {gifUrl ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full z-10">
             {/* GIF/Image */}
             <img
               ref={gifRef}
@@ -101,10 +125,14 @@ export function FrameComponent({
             </div>
           </div>
         ) : (
-          /* Placeholder with tab name */
-          <div className="w-full h-full flex items-center justify-center">
+          /* Placeholder with tab name - visible on top of background image */
+          <div className="relative w-full h-full flex items-center justify-center z-20">
             <div className="text-center px-4">
-              <h3 className="font-playfair text-2xl md:text-3xl text-royal-cream font-bold">
+              <h3 className={`font-playfair text-2xl md:text-3xl font-bold transition-all duration-300 ${
+                isLocalHovered && backgroundImage 
+                  ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" 
+                  : "text-royal-cream"
+              }`}>
                 {title}
               </h3>
             </div>

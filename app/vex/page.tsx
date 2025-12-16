@@ -84,7 +84,7 @@ export default function VexPage() {
               </div>
               <div className="relative w-full max-w-4xl mx-auto h-96 rounded-xl overflow-hidden shadow-card">
                 <Image
-                  src="/assets/drivteam.png"
+                  src="/assets/teamer.JPG"
                   alt="NextGen AI BOTS VEX robotics team members working together on robot projects"
                   fill
                   className="object-cover"
@@ -110,43 +110,59 @@ export default function VexPage() {
               {[
                 {
                   name: "Sukrith Ayyagari",
-                  role: "TBD",
-                  bio: "TBD"
-                },
-                {
-                  name: "Jasper Ding",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Junior",
+                  role: "Build, CAD, Programming",
+                  bio: "Sukrith is the team captain and has been involved in VEX for 5 years. He is passionate about building, engineering, and mechanics, often helping others troubleshoot their designs. He enjoys mentoring newer members and sharing his knowledge with others.",
+                  image: "/assets/suki.png"
                 },
                 {
                   name: "Arpit Jena",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Senior",
+                  role: "Build, CAD, Documentation",
+                  bio: "Arpit has been doing VEX for 4 years and loves building and programming the robot. Outside of robotics, he enjoys working out and staying active. He often volunteers to lead team meetings and organize work sessions.",
+                  image: "/assets/arpit.png"
+                },
+                {
+                  name: "Jasper Ding",
+                  grade: "Junior",
+                  role: "Build, CAD, Documentation",
+                  bio: "Jasper is a Junior at Dougherty Valley High School with 3 years of VEX experience. He's passionate about engineering and computer science and enjoys listening to music in his free time. He is always eager to learn new programming techniques and improve his CAD skills.",
+                  image: "/assets/jasper.png"
                 },
                 {
                   name: "Ashwin Pandian",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Junior",
+                  role: "Build, CAD, Documentation",
+                  bio: "Ashwin has been involved in VEX for 4 years and loves building, engineering, and 3D printing. He enjoys playing sports and hanging out with friends when he's not working on robots. He often experiments with new 3D printing methods to enhance our lab like custom battery chargers and pegboard mounts for all of our tools.",
+                  image: "/assets/ashwin.png"
                 },
                 {
                   name: "Daryl Cheung",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Sophomore",
+                  role: "Build, Documentation",
+                  bio: "Daryl is a Sophomore at Dougherty Valley High School with 3 years of VEX experience. He enjoys building creative robots and experimenting with new mechanisms. He is also interested in learning more about more complex building techniques. In his free time Daryl is a huge Clash Royale player with over 10k trophies.",
+                  image: "/assets/darylmtt.png"
                 },
                 {
                   name: "Avaneesh",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Junior",
+                  role: "Build, Programming, Documentation",
+                  bio: "Avaneesh has been doing VEX for 3 years and enjoys programming and sharing his knowledge with teammates. In his free time, he likes hanging out with friends and exploring new coding techniques. He often helps newer members understand complex coding concepts.",
+                  image: "/assets/nichemtt.png"
                 },
                 {
                   name: "Rohit Anand",
-                  role: "TBD",
-                  bio: "TBD"
+                  grade: "Junior",
+                  role: "Build, Documentation",
+                  bio: "Rohit is a new member passionate about building and engineering, bringing fresh ideas to the team. He enjoys playing sports and learning more about robotics through hands-on projects. Outside of robotics, he is involved in scouting and is currently working on his Eagle Scout project which is an engineering project for a program at our local library called STEM Saturday.",
+                  image: "/assets/rohi.png"
                 },
                 {
-                  name: "Bhim Rao",
-                  role: "TBD",
-                  bio: "TBD"
+                  name: "Bruhatt Rao",
+                  grade: "Junior",
+                  role: "Programming",
+                  bio: "Bruhatt is a junior at California High School. He's passionate about computer science, audio engineering, and AI/ML. Outside of robotics, he builds tech projects, competes in hackathons, and runs a startup called Covo.",
+                  image: "/assets/bhim.png"
                 }
               ].map((member, index) => (
                 <motion.div
@@ -157,16 +173,25 @@ export default function VexPage() {
                   transition={{ duration: 0.6, delay: index * 0.05 }}
                 >
                   <Card className="h-full royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl p-5 shadow-card-soft hover:shadow-card transition-all duration-300 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-royal-red/20 to-royal-beige/20 rounded-full flex items-center justify-center border border-royal-cream/20">
-                      <Users className="w-10 h-10 text-royal-cream/60" />
+                    <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-royal-cream/20">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h4 className="text-lg font-playfair text-royal-cream font-semibold mb-2">
                       {member.name}
                     </h4>
-                    <p className="text-sm text-royal-red font-medium mb-3">
+                    <p className="text-sm text-royal-red font-playfair italic mb-2">
+                      {member.grade}
+                    </p>
+                    <p className="text-xs text-royal-cream/85 font-medium mb-3">
                       {member.role}
                     </p>
-                    <p className="text-xs text-royal-cream/75 leading-relaxed">
+                    <p className="text-xs text-royal-cream leading-relaxed">
                       {member.bio}
                     </p>
                   </Card>
@@ -174,117 +199,6 @@ export default function VexPage() {
               ))}
             </div>
           </motion.div>
-
-          {/* What Makes VEX Special and FAQ Sections */}
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Features Grid */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="space-y-6"
-            >
-              <h3 className="text-2xl font-playfair text-royal-cream mb-6">
-                What Makes VEX Special
-              </h3>
-              
-              <div className="grid gap-4">
-                {[
-                  {
-                    icon: Users,
-                    title: "Teamwork & Collaboration",
-                    description: "Students work together to design, build, and program competitive robots."
-                  },
-                  {
-                    icon: Wrench,
-                    title: "Iterative Design Process",
-                    description: "Learn engineering principles through hands-on building and continuous improvement."
-                  },
-                  {
-                    icon: Code2,
-                    title: "Multi-Language Programming",
-                    description: "Progress from visual Blocks to Python and C++ as skills advance."
-                  },
-                  {
-                    icon: Trophy,
-                    title: "Competition Ready",
-                    description: "Participate in local, regional, and world championship events."
-                  }
-                ].map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <Card className="p-4 royal-card bg-royal-dark-2/60 border-l-4 border-l-royal-red border border-royal-cream/8 hover:border-royal-red/30 transition-colors">
-                      <div className="flex items-start space-x-4">
-                        <div className="p-2 bg-royal-red/10 rounded-lg border border-royal-red/20">
-                          <feature.icon className="w-5 h-5 text-royal-red" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-royal-cream mb-2">{feature.title}</h4>
-                          <p className="text-sm text-royal-cream/75">{feature.description}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* FAQ Section */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <h3 className="text-2xl font-playfair text-royal-cream mb-6">
-                Frequently Asked Questions
-              </h3>
-              
-              <Accordion type="single" collapsible className="w-full space-y-4">
-                <AccordionItem value="item-1" className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl">
-                  <AccordionTrigger className="text-left text-royal-cream hover:text-royal-red transition-colors px-6">
-                    What is VEX Robotics?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-royal-cream/75 px-6 pb-4">
-                    VEX Robotics is an educational robotics platform that combines hands-on building with programming to teach STEM concepts. Students design and build robots to compete in game-based challenges, learning engineering, coding, teamwork, and problem-solving skills in the process.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="item-2" className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl">
-                  <AccordionTrigger className="text-left text-royal-cream hover:text-royal-red transition-colors px-6">
-                    Which kit should I start with (IQ vs V5)?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-royal-cream/75 px-6 pb-4">
-                    VEX IQ is perfect for elementary and middle school students (ages 8-14) with snap-together parts and intuitive programming. VEX V5 is designed for high school students and older (ages 14+) with more advanced building systems and programming capabilities. We'll help you choose the right platform based on age and experience level.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="item-3" className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl">
-                  <AccordionTrigger className="text-left text-royal-cream hover:text-royal-red transition-colors px-6">
-                    Do I need prior experience?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-royal-cream/75 px-6 pb-4">
-                    No prior experience is required! We offer pathways for complete beginners through advanced students. Our mentors provide guidance at every step, from basic building concepts to advanced programming techniques. Everyone starts somewhere, and we're here to support your journey.
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="item-4" className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl">
-                  <AccordionTrigger className="text-left text-royal-cream hover:text-royal-red transition-colors px-6">
-                    How much time and cost is involved?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-royal-cream/75 px-6 pb-4">
-                    Teams typically meet 2-3 times per week during the season (September-April), with additional time before competitions. Costs vary by program level, but we offer scholarships and sponsorship opportunities to ensure financial barriers don't prevent participation. Contact us to discuss specific needs and available support.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </motion.div>
-          </div>
         </div>
       </section>
       
