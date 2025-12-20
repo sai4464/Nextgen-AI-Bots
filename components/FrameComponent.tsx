@@ -25,6 +25,7 @@ interface FrameComponentProps {
   showFrame: boolean
   autoplayMode: "all" | "hover"
   isHovered: boolean
+  hasAnyHover: boolean
 }
 
 export function FrameComponent({
@@ -49,6 +50,7 @@ export function FrameComponent({
   showFrame,
   autoplayMode,
   isHovered,
+  hasAnyHover,
 }: FrameComponentProps) {
   const gifRef = useRef<HTMLImageElement>(null)
   const [isLocalHovered, setIsLocalHovered] = useState(false)
@@ -75,23 +77,27 @@ export function FrameComponent({
         width,
         height,
         transition: "all 0.4s ease",
-        transform: isHovered ? "scale(1.02)" : "scale(1)",
-        zIndex: isHovered ? 10 : 1,
+        transform: "scale(1)",
+        zIndex: 1,
       }}
       onMouseEnter={() => setIsLocalHovered(true)}
       onMouseLeave={() => setIsLocalHovered(false)}
     >
       {/* Placeholder Box with Tab Name */}
-      <div className={`absolute inset-0 bg-royal-dark border-2 rounded-lg overflow-hidden transition-all duration-300 ${
-        isHovered ? "border-royal-red shadow-2xl shadow-royal-red/30" : "border-royal-cream/20 hover:border-royal-red"
-      }`}>
-        {/* Background Image - fades in when hovering over the box */}
+      <div 
+        className={`absolute inset-0 bg-royal-dark border-2 rounded-lg overflow-hidden transition-all duration-300 ${
+          isHovered ? "border-royal-red shadow-2xl shadow-royal-red/30" : "border-royal-cream/20 hover:border-royal-red"
+        }`}
+        style={{
+          opacity: isHovered ? 1 : (hasAnyHover ? 0.2 : 1),
+        }}
+      >
+        {/* Background Image - always visible */}
         {backgroundImage && (
           <div 
             className="absolute inset-0 z-0"
             style={{
-              opacity: isLocalHovered ? 1 : 0,
-              transition: "opacity 0.5s ease-in-out",
+              opacity: 1,
               pointerEvents: "none"
             }}
           >
@@ -129,7 +135,7 @@ export function FrameComponent({
           <div className="relative w-full h-full flex items-center justify-center z-20">
             <div className="text-center px-4">
               <h3 className={`font-playfair text-2xl md:text-3xl font-bold transition-all duration-300 ${
-                isLocalHovered && backgroundImage 
+                backgroundImage 
                   ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" 
                   : "text-royal-cream"
               }`}>

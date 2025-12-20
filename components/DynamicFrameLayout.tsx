@@ -145,31 +145,21 @@ export default function DynamicFrameLayout() {
   }, [])
 
   const getRowSizes = () => {
-    // On mobile, just return static grid
+    // On mobile, return 6 rows (one for each frame) with half height
     if (isMobile) {
-      return "1fr 1fr"
+      return "repeat(6, 0.5fr)"
     }
-    if (hovered === null) {
-      return "1fr 1fr"
-    }
-    const { row } = hovered
-    // For 2 rows: total is 2 units, hovered row expands to 1.5, other shrinks to 0.5
-    const nonHoveredSize = (2 - 1.5) / 1
-    return [0, 1].map((r) => (r === row ? "1.5fr" : `${nonHoveredSize}fr`)).join(" ")
+    // Always return static grid - no size changes on hover
+    return "1fr 1fr"
   }
 
   const getColSizes = () => {
-    // On mobile, just return static grid
+    // On mobile, return single column; otherwise 3 columns
     if (isMobile) {
-      return "1fr 1fr 1fr"
+      return "1fr"
     }
-    if (hovered === null) {
-      return "1fr 1fr 1fr"
-    }
-    const { col } = hovered
-    // For 3 columns: total is 3 units, hovered column expands to 1.5, others split the remaining 1.5
-    const nonHoveredSize = (3 - 1.5) / 2
-    return [0, 1, 2].map((c) => (c === col ? "1.5fr" : `${nonHoveredSize}fr`)).join(" ")
+    // Always return static grid - no size changes on hover
+    return "1fr 1fr 1fr"
   }
 
   const getTransformOrigin = (x: number, y: number) => {
@@ -179,15 +169,15 @@ export default function DynamicFrameLayout() {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className={`w-full ${isMobile ? 'h-auto' : 'h-full'}`}>
       <div
-        className="relative w-full h-full"
+        className={`relative w-full ${isMobile ? 'h-auto' : 'h-full'}`}
         style={{
           display: "grid",
           gridTemplateRows: getRowSizes(),
           gridTemplateColumns: getColSizes(),
           gap: `${gapSize}px`,
-          transition: isMobile ? "none" : "grid-template-rows 0.4s ease, grid-template-columns 0.4s ease",
+          transition: "none",
         }}
       >
         {frames.map((frame) => {
@@ -198,7 +188,7 @@ export default function DynamicFrameLayout() {
           return (
             <motion.div
               key={frame.id}
-              className="relative"
+              className={`relative ${isMobile ? 'min-h-[200px]' : ''}`}
               onMouseEnter={() => !isMobile && setHovered({ row, col })}
               onMouseLeave={() => !isMobile && setHovered(null)}
             >
@@ -227,6 +217,7 @@ export default function DynamicFrameLayout() {
                   hovered?.row === Math.floor(frame.defaultPos.y / 4) &&
                   hovered?.col === Math.floor(frame.defaultPos.x / 4)
                 }
+                hasAnyHover={hovered !== null}
               />
             </motion.div>
           )

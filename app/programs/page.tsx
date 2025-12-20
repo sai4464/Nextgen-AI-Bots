@@ -3,34 +3,35 @@
 import { Footer } from '@/components/footer';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Code, Users, GraduationCap, Trophy, Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const programs = [
+const upcomingPrograms = [
   {
-    icon: Trophy,
-    title: "VEX Competitive Teams",
-    description: "Competitive robot design & strategy",
-    color: "royal-red"
-  },
+    title: "NextGen Winter Camp",
+    description: "Learn VEX Robotics with NextGen AI Bots",
+    image: "/assets/wintercampper.png",
+    imageAlt: "NextGen Winter Camp",
+    details: [
+      { icon: Calendar, text: "January 2nd - January ##" },
+      { icon: Users, text: "5th-8th graders" },
+      { icon: MapPin, text: "3327 Sleeping Meadow Way" }
+    ]
+  }
+];
+
+const pastPrograms = [
   {
-    icon: Code,
-    title: "Summer Camps",
-    description: "Hands-on workshops for beginners",
-    color: "royal-beige"
-  },
-  {
-    icon: Users,
-    title: "Mentorship",
-    description: "Career pathways & college prep",
-    color: "royal-red"
-  },
-  {
-    icon: GraduationCap,
-    title: "Workshops",
-    description: "Short focused skill sessions",
-    color: "royal-beige"
+    title: "STEAM Saturday",
+    description: "Hands-on STEAM learning experience",
+    image: "/assets/STEAMsat.png",
+    imageAlt: "STEAM Saturday Event",
+    details: [
+      { icon: Calendar, text: "Saturday, November 8th, 2025" },
+      { icon: Clock, text: "10:30AM – 12:00PM" },
+      { icon: MapPin, text: "Dougherty Station Library" }
+    ]
   }
 ];
 
@@ -67,139 +68,111 @@ export default function ProgramsPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {programs.map((program, index) => (
-              <motion.div
-                key={program.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-              >
-                <Card className="h-full royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl p-6 shadow-card-soft hover:shadow-card transition-all duration-300 group">
-                  <CardHeader className="p-0">
-                    <div className={`p-3 rounded-xl w-fit mb-4 border ${
-                      program.color === 'royal-red' 
-                        ? 'bg-royal-red/10 border-royal-red/20' 
-                        : 'bg-royal-beige/10 border-royal-beige/20'
-                    }`}>
-                      <program.icon className={`w-7 h-7 ${
-                        program.color === 'royal-red' ? 'text-royal-red' : 'text-royal-beige'
-                      }`} />
-                    </div>
-                    <CardTitle className="text-royal-cream font-semibold text-lg group-hover:text-royal-red transition-colors">
-                      {program.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 space-y-4">
-                    <p className="text-sm leading-relaxed text-royal-cream/75">
-                      {program.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Events Section */}
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Upcoming Events */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
+          {/* Upcoming Programs */}
+          {upcomingPrograms.length > 0 && (
+            <div className="mb-16">
               <div className="flex items-center space-x-3 mb-6">
                 <Calendar className="w-6 h-6 text-royal-red" />
-                <h2 className="text-2xl font-playfair text-royal-cream">Upcoming Events</h2>
+                <h2 className="text-2xl font-playfair text-royal-cream">Upcoming Programs</h2>
               </div>
-              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300">
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row gap-4 items-start">
-                    <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3">
-                      <Image
-                        src="/assets/wintercampper.png"
-                        alt="NextGen Winter Camp"
-                        width={400}
-                        height={300}
-                        className="object-contain w-full h-auto max-h-52"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-playfair font-bold text-royal-cream mb-2">
-                        NextGen Winter Camp
-                      </h3>
-                      <p className="text-sm text-royal-cream/85 mb-3">
-                        Learn VEX Robotics with NextGen AI Bots
-                      </p>
-                      <div className="space-y-1.5 text-sm text-royal-cream/85">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>January 2nd - January ##</span>
+              <div className="grid md:grid-cols-2 gap-8">
+                {upcomingPrograms.map((program, index) => (
+                  <motion.div
+                    key={program.title}
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                  >
+                    <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300 h-full">
+                      <CardContent className="p-4 h-full flex flex-col">
+                        <div className="flex flex-col md:flex-row gap-4 items-start flex-1">
+                          <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3 h-52">
+                            <Image
+                              src={program.image}
+                              alt={program.imageAlt}
+                              width={400}
+                              height={300}
+                              className="object-contain w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0 flex flex-col">
+                            <CardTitle className="text-xl font-playfair font-bold text-royal-cream mb-2">
+                              {program.title}
+                            </CardTitle>
+                            <p className="text-sm text-royal-cream/85 mb-3">
+                              {program.description}
+                            </p>
+                            <div className="space-y-1.5 text-sm text-royal-cream/85">
+                              {program.details.map((detail, detailIndex) => (
+                                <div key={detailIndex} className="flex items-center gap-2">
+                                  <detail.icon className="w-4 h-4 text-royal-red flex-shrink-0" />
+                                  <span>{detail.text}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>5th-8th graders</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>3327 Sleeping Meadow Way</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
 
-            {/* Past Events */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
+          {/* Past Programs */}
+          {pastPrograms.length > 0 && (
+            <div>
               <div className="flex items-center space-x-3 mb-6">
                 <Clock className="w-6 h-6 text-royal-beige" />
-                <h2 className="text-2xl font-playfair text-royal-cream">Past Events</h2>
+                <h2 className="text-2xl font-playfair text-royal-cream">Past Programs</h2>
               </div>
-              <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300">
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row gap-4 items-start">
-                    <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3">
-                      <Image
-                        src="/assets/STEAMsat.png"
-                        alt="STEAM Saturday Event"
-                        width={400}
-                        height={300}
-                        className="object-contain w-full h-auto max-h-52"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-playfair font-bold text-royal-cream mb-2">
-                        STEAM Saturday
-                      </h3>
-                      <div className="space-y-1.5 text-sm text-royal-cream/85">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>Saturday, November 8th, 2025</span>
+              <div className="grid md:grid-cols-2 gap-8">
+                {pastPrograms.map((program, index) => (
+                  <motion.div
+                    key={program.title}
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                  >
+                    <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300 h-full">
+                      <CardContent className="p-4 h-full flex flex-col">
+                        <div className="flex flex-col md:flex-row gap-4 items-start flex-1">
+                          <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3 h-52">
+                            <Image
+                              src={program.image}
+                              alt={program.imageAlt}
+                              width={400}
+                              height={300}
+                              className="object-contain w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0 flex flex-col">
+                            <CardTitle className="text-xl font-playfair font-bold text-royal-cream mb-2">
+                              {program.title}
+                            </CardTitle>
+                            <p className="text-sm text-royal-cream/85 mb-3">
+                              {program.description}
+                            </p>
+                            <div className="space-y-1.5 text-sm text-royal-cream/85">
+                              {program.details.map((detail, detailIndex) => (
+                                <div key={detailIndex} className="flex items-center gap-2">
+                                  <detail.icon className="w-4 h-4 text-royal-red flex-shrink-0" />
+                                  <span>{detail.text}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>10:30AM – 12:00PM</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-royal-red flex-shrink-0" />
-                          <span>Dougherty Station Library</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
       

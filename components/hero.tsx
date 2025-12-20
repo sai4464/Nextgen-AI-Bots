@@ -8,7 +8,7 @@ import DynamicFrameLayout from "./DynamicFrameLayout";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-royal-dark">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden md:overflow-hidden bg-royal-dark">
       {/* Background Texture */}
       <div className="absolute inset-0 bg-gradient-to-br from-royal-dark via-royal-dark-2 to-royal-dark opacity-90" />
       
@@ -71,7 +71,7 @@ export function Hero() {
             >
               <Button 
                 asChild 
-                className="royal-button-primary inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-royal-red bg-royal-red text-white font-semibold hover:brightness-105 transition"
+                className="royal-button-primary !bg-royal-red !text-white !border-royal-red inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 font-semibold hover:!bg-royal-red/90 hover:!text-white hover:!border-royal-red transition"
               >
                 <a href="/donations">Donate</a>
               </Button>
@@ -84,7 +84,7 @@ export function Hero() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="md:col-span-7 h-full min-h-[600px] md:min-h-0"
+            className="md:col-span-7 h-full min-h-[600px] md:min-h-0 md:h-full"
           >
             <DynamicFrameLayout />
           </motion.div>
