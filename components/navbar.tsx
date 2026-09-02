@@ -10,6 +10,7 @@ const navigation = [
   { name: 'About', href: '/about' },
   { name: 'Mission', href: '/mission' },
   { name: 'Programs', href: '/programs' },
+  { name: 'Build Manual', href: '/manual' },
   { name: 'VEX Robotics', href: '/vex' },
   { name: 'Get Involved', href: '/get-involved' },
   { name: 'Contact', href: '/contact' },
@@ -18,11 +19,21 @@ const navigation = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
+    // Slide the bar away while reading down the page and bring it back on the
+    // first upward scroll. Tracked in a ref rather than state so the listener
+    // never has to re-bind, and ignored near the very top where hiding a bar
+    // that is about to reappear just reads as a flicker.
+    let lastY = window.scrollY;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const y = window.scrollY;
+      setIsScrolled(y > 50);
+      if (y > 120 && y > lastY + 4) setIsHidden(true);
+      else if (y < lastY - 4 || y <= 120) setIsHidden(false);
+      lastY = y;
       
       const sections = navigation.map(item => item.href.substring(1));
       const currentSection = sections.find(section => {
@@ -45,7 +56,7 @@ export function Navbar() {
       isScrolled 
         ? 'bg-royal-dark/90 backdrop-blur-md border-b border-royal-red/30' 
         : 'bg-transparent'
-    }`}>
+    } ${isHidden && !isOpen ? '-translate-y-full' : 'translate-y-0'}`}>
       <nav className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
           {/* Logo and Brand */}

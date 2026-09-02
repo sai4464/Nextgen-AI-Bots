@@ -44,23 +44,39 @@ export function Gallery({ folderId }: GalleryProps) {
         return;
       }
 
-      const apiUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,thumbnailLink,webContentLink)&key=${apiKey}`;
-      
-      const response = await fetch(apiUrl);
+      // Fetch ALL files by paginating (Drive API returns max 100 per request by default, 1000 with pageSize)
+      let allFiles: any[] = [];
+      let pageToken: string | undefined;
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Google Drive API error:', errorData);
-        throw new Error(`Failed to fetch images: ${response.status} ${response.statusText}`);
-      }
+      do {
+        const params = new URLSearchParams({
+          q: `'${folderId}' in parents and trashed=false`,
+          fields: 'nextPageToken, files(id,name,mimeType,thumbnailLink,webContentLink)',
+          key: apiKey,
+          pageSize: '1000', // Max allowed by Drive API
+          orderBy: 'createdTime desc', // Newest first so new uploads appear at top
+        });
+        if (pageToken) params.set('pageToken', pageToken);
 
-      const data = await response.json();
-      const files = data.files || [];
-      
-      console.log('Fetched files from Google Drive:', files);
+        const apiUrl = `https://www.googleapis.com/drive/v3/files?${params.toString()}`;
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Google Drive API error:', errorData);
+          throw new Error(`Failed to fetch images: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const files = data.files || [];
+        allFiles = allFiles.concat(files);
+        pageToken = data.nextPageToken;
+      } while (pageToken);
+
+      console.log('Fetched files from Google Drive:', allFiles.length, 'total');
 
       // Filter image files and create image URLs
-      const imageFiles = files.filter((file: any) => 
+      const imageFiles = allFiles.filter((file: any) => 
         file.mimeType?.startsWith('image/')
       );
       

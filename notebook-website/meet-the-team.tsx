@@ -146,14 +146,6 @@ export function MeetTheTeam() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSeKWyuaAT70BC3WtJGcPtwiMxfnq3lJ1FyB7uYpg3i0dBCLEQ/viewform?usp=sharing&ouid=102982118321180836201"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="royal-button-primary px-6 py-3 rounded-full border-2 border-royal-red bg-royal-red text-white font-semibold hover:bg-royal-red/90 transition-all duration-200"
-              >
-                Become a Mentor
-              </a>
-              <a
                 href="#contact"
                 className="royal-button-secondary px-6 py-3 rounded-full border-2 border-royal-cream text-royal-cream font-semibold hover:bg-royal-cream/10 transition-all duration-200"
               >

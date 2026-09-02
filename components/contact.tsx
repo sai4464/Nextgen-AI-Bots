@@ -9,7 +9,27 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import emailjs from '@emailjs/browser';
 import { Mail, Send, CheckCircle, AlertCircle } from 'lucide-react';
+
+/**
+ * The site is a static export, so there is no server to post to. Mail goes
+ * straight from the browser through EmailJS.
+ *
+ * These three values are public by design: EmailJS's "public key" is meant to
+ * ship to the client, and it is the allow-list of domains configured in the
+ * EmailJS dashboard, not secrecy, that stops other sites sending as you. Lock
+ * the service down there.
+ *
+ * This replaced a POST to /api/contact that silently dropped every message:
+ * the route only ever returned {success: true} without sending anything, and
+ * under `output: 'export'` it was never even deployed.
+ */
+const EMAILJS = {
+  serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+  templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+  publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+};
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -24,25 +44,36 @@ export function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+    // Never claim a message was sent when it was not. If the form is not
+    // configured, say so and point at the mail link below.
+    if (!EMAILJS.serviceId || !EMAILJS.templateId || !EMAILJS.publicKey) {
+      toast.error('The contact form is not set up yet. Please email us at info@nextgenaibots.org.', {
+        icon: <AlertCircle className="w-4 h-4" />,
       });
+      setIsSubmitting(false);
+      return;
+    }
 
-      if (response.ok) {
-        toast.success("Message sent successfully! We'll get back to you soon.", {
-          icon: <CheckCircle className="w-4 h-4" />,
-        });
-        setFormData({ name: '', email: '', role: '', message: '' });
-      } else {
-        throw new Error('Failed to send message');
-      }
+    try {
+      await emailjs.send(
+        EMAILJS.serviceId,
+        EMAILJS.templateId,
+        {
+          from_name: formData.name,
+          reply_to: formData.email,
+          role: formData.role,
+          message: formData.message,
+        },
+        { publicKey: EMAILJS.publicKey }
+      );
+
+      toast.success("Message sent successfully! We'll get back to you soon.", {
+        icon: <CheckCircle className="w-4 h-4" />,
+      });
+      setFormData({ name: '', email: '', role: '', message: '' });
     } catch (error) {
-      toast.error("Failed to send message. Please try again or email us directly.", {
+      console.error('[contact] EmailJS send failed:', error);
+      toast.error('Failed to send message. Please try again or email us directly.', {
         icon: <AlertCircle className="w-4 h-4" />,
       });
     } finally {

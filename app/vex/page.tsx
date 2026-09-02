@@ -46,18 +46,6 @@ export default function VexPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Button 
                 size="lg" 
-                className="royal-button-primary bg-royal-red hover:bg-royal-red/90 text-royal-cream px-8 shadow-lg shadow-royal-red/30 transition-all duration-200"
-              >
-                Apply to a Team
-              </Button>
-              <Button 
-                size="lg" 
-                className="royal-button-secondary border-royal-beige text-royal-beige hover:bg-royal-beige/10 px-8 shadow-lg shadow-royal-beige/20 transition-all duration-200"
-              >
-                Become a Mentor
-              </Button>
-              <Button 
-                size="lg" 
                 className="royal-button-secondary border-royal-cream text-royal-cream hover:bg-royal-cream/10 px-8 shadow-lg shadow-royal-cream/20 transition-all duration-200"
               >
                 Sponsor a Team

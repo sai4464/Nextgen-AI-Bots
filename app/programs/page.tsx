@@ -9,19 +9,34 @@ import Link from 'next/link';
 
 const upcomingPrograms = [
   {
-    title: "NextGen Winter Camp",
-    description: "Learn VEX Robotics with NextGen AI Bots",
-    image: "/assets/wintercampper.png",
-    imageAlt: "NextGen Winter Camp",
+    title: "6th Annual KitsCubed STEM Fair",
+    description:
+      "We are partnering with Kits Cubed and attending the 6th Annual STEM Fair, presented by California Life Sciences. A free day of hands-on science for the whole family, with live demonstrations and free take-home kits. Come find the NextGen AI Bots table to meet our team, try our robots, and talk about getting into robotics and AI.",
+    image: "/assets/oakland-stem-fair-2026.png",
+    imageAlt: "6th Annual STEM Fair presented by California Life Sciences, September 12th at Oakland Tech",
+    link: "https://www.kitscubed.com/events",
+    linkLabel: "Visit at KitsCubed.com",
     details: [
-      { icon: Calendar, text: "January 2nd - January ##" },
-      { icon: Users, text: "5th-8th graders" },
-      { icon: MapPin, text: "3327 Sleeping Meadow Way" }
+      { icon: Calendar, text: "Saturday, September 12th, 2026" },
+      { icon: Clock, text: "10:00AM \u2013 3:00PM" },
+      { icon: MapPin, text: "Oakland Tech \u00b7 4351 Broadway, Oakland, CA 94611" },
+      { icon: Users, text: "Free for all ages" }
     ]
   }
 ];
 
 const pastPrograms = [
+  {
+    title: "NextGen Winter Camp",
+    description: "Learn VEX Robotics with NextGen AI Bots",
+    image: "/assets/wintercampper.png",
+    imageAlt: "NextGen Winter Camp",
+    details: [
+      { icon: Calendar, text: "January 2nd - February 21st" },
+      { icon: Users, text: "5th-8th graders" },
+      { icon: MapPin, text: "3327 Sleeping Meadow Way" }
+    ]
+  },
   {
     title: "STEAM Saturday",
     description: "Hands-on STEAM learning experience",
@@ -75,7 +90,7 @@ export default function ProgramsPage() {
                 <Calendar className="w-6 h-6 text-royal-red" />
                 <h2 className="text-2xl font-playfair text-royal-cream">Upcoming Programs</h2>
               </div>
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-8">
                 {upcomingPrograms.map((program, index) => (
                   <motion.div
                     key={program.title}
@@ -87,30 +102,41 @@ export default function ProgramsPage() {
                     <Card className="royal-card bg-royal-dark-2/60 border border-royal-cream/8 rounded-xl overflow-hidden hover:shadow-card transition-all duration-300 h-full">
                       <CardContent className="p-4 h-full flex flex-col">
                         <div className="flex flex-col md:flex-row gap-4 items-start flex-1">
-                          <div className="relative w-full md:w-64 flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3 h-52">
+                          <div className="relative w-full md:w-[420px] flex-shrink-0 bg-royal-dark rounded-lg overflow-hidden flex items-center justify-center p-3 h-[420px] md:h-[560px]">
                             <Image
                               src={program.image}
                               alt={program.imageAlt}
-                              width={400}
-                              height={300}
+                              width={1240}
+                              height={1600}
+                              priority
                               className="object-contain w-full h-full"
                             />
                           </div>
-                          <div className="flex-1 min-w-0 flex flex-col">
-                            <CardTitle className="text-xl font-playfair font-bold text-royal-cream mb-2">
+                          <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <CardTitle className="text-2xl md:text-3xl font-playfair font-bold text-royal-cream mb-3">
                               {program.title}
                             </CardTitle>
-                            <p className="text-sm text-royal-cream/85 mb-3">
+                            <p className="text-base md:text-lg leading-relaxed text-royal-cream/85 mb-5">
                               {program.description}
                             </p>
-                            <div className="space-y-1.5 text-sm text-royal-cream/85">
+                            <div className="space-y-2.5 text-base text-royal-cream/85">
                               {program.details.map((detail, detailIndex) => (
-                                <div key={detailIndex} className="flex items-center gap-2">
-                                  <detail.icon className="w-4 h-4 text-royal-red flex-shrink-0" />
+                                <div key={detailIndex} className="flex items-center gap-2.5">
+                                  <detail.icon className="w-5 h-5 text-royal-red flex-shrink-0" />
                                   <span>{detail.text}</span>
                                 </div>
                               ))}
                             </div>
+                            {program.link && (
+                              <a
+                                href={program.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-royal-red px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-royal-red/90"
+                              >
+                                {program.linkLabel}
+                              </a>
+                            )}
                           </div>
                         </div>
                       </CardContent>

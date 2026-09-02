@@ -181,3 +181,54 @@ body::before {
 .custom-slider .custom-slider-track {
   @apply h-full bg-white/50;
 }
+
+/* ---------------------------------------------------------------- *
+ * Neon call-out to the build manual, top right of the hero.
+ *
+ * The pulse animates opacity and glow only. Animating a text-shadow
+ * colour or a transform here would drag the whole hero into a repaint
+ * on every frame, and the DynamicFrameLayout next to it is already
+ * expensive enough.
+ * ---------------------------------------------------------------- */
+.neon-manual-link {
+  color: #FF4D6A;
+  animation: neon-pulse 2.2s ease-in-out infinite;
+  transition: transform 0.2s ease;
+}
+
+.neon-manual-link:hover {
+  transform: scale(1.05);
+  animation-play-state: paused;
+}
+
+/* Pulse the glow, not the element's opacity, so the chip behind the words
+   stays opaque and the text never washes out over the photo grid. */
+@keyframes neon-pulse {
+  0%, 100% {
+    color: #E8465E;
+    text-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.95),
+      0 0 4px rgba(255, 77, 106, 0.5),
+      0 0 10px rgba(215, 38, 56, 0.3);
+  }
+  50% {
+    color: #FF7B90;
+    text-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.95),
+      0 0 6px rgba(255, 77, 106, 1),
+      0 0 16px rgba(255, 77, 106, 0.8),
+      0 0 34px rgba(215, 38, 56, 0.6);
+  }
+}
+
+/* Someone who asked for less motion gets the glow without the throb. */
+@media (prefers-reduced-motion: reduce) {
+  .neon-manual-link {
+    animation: none;
+    color: #FF7B90;
+    text-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.95),
+      0 0 6px rgba(255, 77, 106, 0.9),
+      0 0 16px rgba(255, 77, 106, 0.6);
+  }
+}

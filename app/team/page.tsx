@@ -33,7 +33,7 @@ const teamMembers = [
     name: "Ashwin Pandian",
     grade: "Junior",
     role: "Build, CAD, Documentation",
-    bio: "Ashwin has been involved in VEX for 4 years and loves building, engineering, and 3D printing. He enjoys playing sports and hanging out with friends when he's not working on robots. He often experiments with new 3D printing methods to enhance our lab like custom battery chargers and pegboard mounts for all of our tools.",
+    bio: "Ashwin has been involved in VEX for 4 years and loves building, engineering, and 3D printing. He enjoys playing sports and hanging out with friends when he's not working on robots. He often experiments with new 3D printing method with new designs, and creates any helpful materials needed for the lab or robot.",
     image: "/assets/ashwin.png"
   },
   {

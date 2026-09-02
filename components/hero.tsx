@@ -8,7 +8,7 @@ import DynamicFrameLayout from "./DynamicFrameLayout";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden md:overflow-hidden bg-royal-dark">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden md:overflow-hidden bg-royal-dark">
       {/* Background Texture */}
       <div className="absolute inset-0 bg-gradient-to-br from-royal-dark via-royal-dark-2 to-royal-dark opacity-90" />
       
@@ -29,9 +29,20 @@ export function Hero() {
           </div>
         </Link>
       </div>
-      
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[80vh] md:h-[80vh]">
+
+      {/* Manual call-out, top right. The pulse is opacity only, so the glow
+          stays put and nothing reflows underneath it. */}
+      <div className="absolute right-6 top-8 z-30">
+        <Link
+          href="/manual"
+          className="neon-manual-link block whitespace-nowrap text-right font-extrabold uppercase leading-none tracking-[0.06em] text-[13px] sm:text-[16px]"
+        >
+          Click here for Robo-Dog Manual!!
+        </Link>
+      </div>
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center min-h-[70vh] md:h-[70vh]">
           {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -51,16 +62,6 @@ export function Hero() {
               <span className="block font-bold italic text-royal-cream">next generation</span>
               <span className="block text-6xl">of <span className="text-royal-red font-bold italic">Robotics & AI</span></span>
             </motion.h1>
-
-            <motion.p 
-              className="text-lg text-royal-cream/85 leading-relaxed max-w-xl"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              Hands-on camps, VEX teams, and inclusive pathways into STEM for students worldwide. We teach <span className="text-royal-red font-semibold">engineering fundamentals</span>, build <span className="font-bold">competitive robot teams</span>, and unlock <span className="text-royal-red font-semibold">creative problem solving</span>.
-            </motion.p>
 
             <motion.div 
               className="flex flex-wrap gap-4 pt-4"
@@ -84,7 +85,7 @@ export function Hero() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="md:col-span-7 h-full min-h-[600px] md:min-h-0 md:h-full"
+            className="md:col-span-7 h-full min-h-[440px] md:min-h-0 md:h-full"
           >
             <DynamicFrameLayout />
           </motion.div>
