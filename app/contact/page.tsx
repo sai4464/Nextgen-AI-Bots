@@ -11,9 +11,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import emailjs from '@emailjs/browser';
 import { Mail, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+/**
+ * Mail goes straight from the browser through EmailJS, because the build has
+ * no server to post to.
+ *
+ * The IDs are inlined rather than read from env vars alone. All three are
+ * public by design (EmailJS ships them to the client and gates sending on a
+ * domain allow-list, not on secrecy), and nobody on this side of the repo can
+ * set env vars on the deploy, so a missing variable would silently disable
+ * the form.
+ */
+const EMAILJS = {
+  serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_b4fan0w',
+  templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_go6tgeo',
+  publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'T2mZOP0Zm4R-3rYin',
+};
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -29,24 +46,35 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      await emailjs.send(
+        EMAILJS.serviceId,
+        EMAILJS.templateId,
+        {
+          // Two naming schemes on purpose. The template live in the dashboard
+          // is EmailJS's stock auto-reply, which reads {{name}} and {{title}};
+          // the descriptive names are what a purpose-built notification
+          // template would use. Sending both means the form works against the
+          // template as it stands today and keeps working if the body is
+          // rewritten later, with no further code change.
+          from_name: formData.name,
+          reply_to: formData.email,
+          role: formData.role,
+          message: formData.message,
 
-      if (response.ok) {
-        toast.success("Message sent successfully! We'll get back to you soon.", {
-          icon: <CheckCircle className="w-4 h-4" />,
-        });
-        setFormData({ name: '', email: '', role: '', message: '' });
-      } else {
-        throw new Error('Failed to send message');
-      }
+          name: formData.name,
+          email: formData.email,
+          title: `${formData.message}\n\nSent by ${formData.name} (${formData.email}), role: ${formData.role}`,
+        },
+        { publicKey: EMAILJS.publicKey }
+      );
+
+      toast.success("Message sent successfully! We'll get back to you soon.", {
+        icon: <CheckCircle className="w-4 h-4" />,
+      });
+      setFormData({ name: '', email: '', role: '', message: '' });
     } catch (error) {
-      toast.error("Failed to send message. Please try again or email us directly.", {
+      console.error('[contact] EmailJS send failed:', error);
+      toast.error('Failed to send message. Please try again or email us directly.', {
         icon: <AlertCircle className="w-4 h-4" />,
       });
     } finally {
