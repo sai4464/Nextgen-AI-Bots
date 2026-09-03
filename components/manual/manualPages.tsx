@@ -37,6 +37,9 @@ const ELECTRONIC_VIEW: Record<string, 'motor' | 'battery' | 'switch' | 'connecto
 function groupForPlacement(step: number) {
   const groups = new Map<string, Instance[]>();
   for (const inst of addedAt(step)) {
+    // The lower body is the thing everything else goes onto, not a part being
+    // placed, so it gets no figure of its own and no arrow.
+    if (inst.key === 'body') continue;
     const kind = inst.stl ?? inst.builder ?? inst.key;
     const list = groups.get(kind);
     if (list) list.push(inst);
@@ -350,19 +353,21 @@ function Step1() {
         <PartsCallout
           items={[
             { part: p('lowerBody'), qty: 1 },
-            { part: p('shortLeg'), qty: 2 },
-            { part: p('nut'), qty: 2 },
+            { part: p('motor'), qty: 1 },
           ]}
         />
         <Steps
           items={[
-            <>Body on its belly. Two <strong>studs</strong> stick out of this side.</>,
-            <>At the <strong>tail</strong> end, push a <strong>Short Leg</strong> all the way down until it touches the body.</>,
-            <>At the <strong>head</strong> end, the stud has a fat step. The leg stops on the thin part, leaving a small gap.</>,
-            <>Spin a <strong>Nut</strong> onto each stud. {TIGHTEN}</>,
+            <>Body on its belly. The <strong>head</strong> is at one end.</>,
+            <>Turn the motor so the <strong>grey part with the wires</strong> points at the
+              <strong> back</strong>, the end without the head.</>,
+            <>A <strong>shaft</strong> sticks out of each side. Line them up with the two
+              <strong> gaps</strong> in the side walls.</>,
+            <>Lower it straight down so each shaft <strong>slides into its gap</strong>.</>,
+            <>The <strong>Spindle Cap</strong> is already pushed onto one shaft. Leave it for now.</>,
           ]}
         />
-        <PlacementStrip step={STEP.shortLegsRight} />
+        <PlacementStrip step={STEP.motor} />
       </div>
     </div>
   );
@@ -374,19 +379,21 @@ function Step2() {
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
         <PartsCallout
           items={[
-            { part: p('shortLeg'), qty: 2 },
-            { part: p('nut'), qty: 2 },
+            { part: p('spindle'), qty: 2 },
+            { part: p('spindleCap'), qty: 2 },
           ]}
         />
         <Steps
           items={[
-            <>Turn the dog around.</>,
-            <>Do <strong>Step 1</strong> again on this side.</>,
-            <>Tail end goes flush, head end keeps its gap.</>,
-            <>Both sides should look the same. {TIGHTEN}</>,
+            <>Pull the <strong>Spindle Cap</strong> off the shaft and put it to one side.</>,
+            <>Push a <strong>Spindle</strong> onto each shaft, straight on and
+              <strong> centred</strong>.</>,
+            <>The two spindles point <strong>opposite ways</strong>. One pin up, one pin down.
+              That is what makes it walk.</>,
+            <>Press the <strong>Spindle Cap</strong> into the middle of each spindle.</>,
           ]}
         />
-        <PlacementStrip step={STEP.shortLegsLeft} />
+        <PlacementStrip step={STEP.spindles} />
       </div>
     </div>
   );
@@ -396,15 +403,23 @@ function Step3() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout items={[{ part: p('motor'), qty: 1 }]} />
-        <Steps
+        <PartsCallout
           items={[
-            <>Line the <strong>shafts</strong> up with the side notches.</>,
-            <>Press down until it <strong>clicks</strong>.</>,
-            <>Wires point to the back.</>,
+            { part: p('shortLeg'), qty: 4 },
+            { part: p('nut'), qty: 4 },
           ]}
         />
-        <PlacementStrip step={STEP.motor} />
+        <Steps
+          items={[
+            <>Four <strong>studs</strong> stick out of the body, two per side.</>,
+            <>At the <strong>tail</strong>, push a <strong>Short Leg</strong> all the way down
+              until it touches the body.</>,
+            <>At the <strong>head</strong>, the stud has a fat step. The leg stops on the thin
+              part, leaving a small gap.</>,
+            <>Spin a <strong>Nut</strong> onto each stud. {TIGHTEN}</>,
+          ]}
+        />
+        <PlacementStrip step={STEP.shortLegs} />
       </div>
     </div>
   );
@@ -414,16 +429,16 @@ function Step4() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout items={[{ part: p('spindle'), qty: 2 }]} />
+        <PartsCallout items={[{ part: p('longLeg'), qty: 4 }]} />
         <Steps
           items={[
-            <>Match the <strong>D</strong> hole to the D shaft.</>,
-            <>Push straight on, all the way.</>,
-            <>Same on the other side.</>,
-            <>Each spindle has a <strong>pin</strong> off to one side. The long legs go on that.</>,
+            <>Find the <strong>pin</strong> sticking out of each spindle.</>,
+            <>Slide the <strong>top hole</strong> of a <strong>Long Leg</strong> onto that pin.</>,
+            <>Then a second Long Leg onto the <strong>same pin</strong>, next to the first.</>,
+            <>Two long legs per side, four in total. They just hang there for now.</>,
           ]}
         />
-        <PlacementStrip step={STEP.spindles} />
+        <PlacementStrip step={STEP.longLegsOnPin} />
       </div>
     </div>
   );
@@ -435,21 +450,24 @@ function Step5() {
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
         <PartsCallout
           items={[
-            { part: p('longLeg'), qty: 2 },
-            { part: p('specialSpacer'), qty: 2 },
-            { part: p('screw'), qty: 2 },
-            { part: p('nut'), qty: 2 },
+            { part: p('specialSpacer'), qty: 4 },
+            { part: p('screw'), qty: 4 },
+            { part: p('nut'), qty: 4 },
           ]}
         />
         <Steps
           items={[
-            <><strong>Spacer</strong> right through the hole in a <strong>Short Leg</strong>, all the way in.</>,
-            <>Top hole of the <strong>Long Leg</strong> onto the spindle <strong>pin</strong>. Both long legs share it.</>,
-            <>Middle hole of the Long Leg onto the other end of the Spacer.</>,
-            <><strong>Screw</strong> in from the outside, head facing you. <strong>Nut</strong> on the inside end. {TIGHTEN}</>,
+            <>Push a <strong>Spacer</strong> right through the hole in each
+              <strong> Short Leg</strong>, all the way in.</>,
+            <>The long leg <strong>closest to the body</strong> goes to the
+              <strong> back</strong> short leg. The outer one goes to the front.</>,
+            <>Drop that long leg&rsquo;s middle hole onto the end of the Spacer.</>,
+            <><strong>Screw</strong> in from the outside, head facing you.
+              <strong> Nut</strong> on the inside end. {TIGHTEN}</>,
+            <>Do all <strong>four</strong> joints the same way.</>,
           ]}
         />
-        <PlacementStrip step={STEP.longLegsRight} />
+        <PlacementStrip step={STEP.legJoints} />
       </div>
     </div>
   );
@@ -459,43 +477,12 @@ function Step6() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout
-          items={[
-            { part: p('longLeg'), qty: 2 },
-            { part: p('specialSpacer'), qty: 2 },
-            { part: p('screw'), qty: 2 },
-            { part: p('nut'), qty: 2 },
-          ]}
-        />
+        <PartsCallout items={[{ part: p('nut'), qty: 2 }]} />
         <Steps
           items={[
-            <>Turn the dog around.</>,
-            <>Do <strong>Step 5</strong> again on this side.</>,
-            <>It is a mirror. Flip the leg over if it looks backwards.</>,
-            <>All four legs should cross in an <strong>X</strong>.</>,
-          ]}
-        />
-        <PlacementStrip step={STEP.longLegsLeft} />
-      </div>
-    </div>
-  );
-}
-
-function Step7() {
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout
-          items={[
-            { part: p('nut'), qty: 2 },
-            { part: p('spindleCap'), qty: 2 },
-          ]}
-        />
-        <Steps
-          items={[
-            <>One <strong>Nut</strong> on the spindle pin, past both long legs. {TIGHTEN}</>,
-            <><strong>Spindle Cap</strong> into the middle of the spindle. Press until it stays.</>,
-            <>Same on the other side.</>,
+            <>One <strong>Nut</strong> onto the spindle pin, past both long legs.</>,
+            <>{TIGHTEN} The legs must still swing freely.</>,
+            <>Other side too.</>,
             <>Turn a spindle <strong>slowly</strong> by hand and watch it walk.</>,
           ]}
         />
@@ -505,7 +492,7 @@ function Step7() {
             Next comes the Electronics chapter, where you give your Robo-Dog its power.
           </p>
         </div>
-        <PlacementStrip step={STEP.lockUp} />
+        <PlacementStrip step={STEP.spindleNuts} />
       </div>
     </div>
   );
@@ -537,14 +524,16 @@ function Step8() {
         <PartsCallout items={[{ part: p('battery'), qty: 1 }]} />
         <Steps
           items={[
-            <>Slide the <strong>Battery</strong> in flat, from the side.</>,
-            <>Wires point to the back.</>,
-            <>Press until it sits in the <strong>notches</strong>.</>,
+            <>Stand the <strong>Battery</strong> up on its <strong>thin edge</strong>, not flat.</>,
+            <>Wires point to the <strong>back</strong>.</>,
+            <>Lower it into the channel between the <strong>head</strong> and the motor.</>,
+            <>Push it against the <strong>left wall</strong> so it sits fully inside the body.</>,
           ]}
         />
         <Caution tone="danger">
           Never squash, bend or fold the battery. A pinched battery can start a fire.
         </Caution>
+        <PlacementStrip step={STEP.battery} />
       </div>
     </div>
   );
@@ -557,11 +546,13 @@ function Step9() {
         <PartsCallout items={[{ part: p('switch'), qty: 1 }]} />
         <Steps
           items={[
-            <>Find the gap at the <strong>back</strong> of the body.</>,
-            <>Push the <strong>Switch</strong> in until it <strong>clicks</strong>.</>,
+            <>Find the rectangular <strong>slot</strong> in the back wall.</>,
+            <>Hold the <strong>Switch</strong> so it is <strong>wide side across</strong>, then
+              push it in until it <strong>clicks</strong>.</>,
             <>Leave it set to <strong>O</strong>.</>,
           ]}
         />
+        <PlacementStrip step={STEP.switch} />
       </div>
     </div>
   );
@@ -569,7 +560,7 @@ function Step9() {
 
 function Step10Wiring() {
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
         <PartsCallout items={[{ part: p('connector'), qty: 3 }]} />
         <div className="rounded-2xl border-[3px] border-neutral-900/85 bg-white/60 p-3.5">
@@ -649,7 +640,7 @@ function TroublePage() {
     ['It stops after a while', 'The battery is flat. Ask a grown-up to charge it, and never charge it alone or overnight.'],
   ];
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <PageHeader title="If it does not work" kicker="Troubleshooting" />
       <div className="space-y-2">
         {rows.map(([q, a]) => (
@@ -691,29 +682,27 @@ export const MANUAL_LEAVES: BookLeaf[] = [
   { id: 'start', tab: 'Before you start', front: <WelcomePage />, back: <SafetyPage /> },
   { id: 'parts', tab: 'Parts list', front: <PartsListPage />, back: <ElectronicPartsPage /> },
 
-  stepLeaf('s1', 'Step 1 · Short legs', <Step1 />, STEP.shortLegsRight,
-    'Short leg presses onto the stud, then the nut spins on and tightens down.'),
-  stepLeaf('s2', 'Step 2 · Other side', <Step2 />, STEP.shortLegsLeft,
-    'The same two parts again, mirrored onto the other side.'),
-  stepLeaf('s3', 'Step 3 · Motor', <Step3 />, STEP.motor,
-    'The motor drops in, a shaft through each side notch.'),
-  stepLeaf('s4', 'Step 4 · Spindles', <Step4 />, STEP.spindles,
-    'Each spindle lines its D-hole up with the shaft and presses on.'),
-  stepLeaf('s5', 'Step 5 · Long legs', <Step5 />, STEP.longLegsRight,
-    'Spacer through the short leg, long leg onto the spindle pin, then the screw and nut close it up.'),
-  stepLeaf('s6', 'Step 6 · Other side', <Step6 />, STEP.longLegsLeft,
-    'The same joint again, mirrored onto the other side.'),
-  stepLeaf('s7', 'Step 7 · Lock nuts', <Step7 />, STEP.lockUp,
-    'One nut holds both long legs on the pin, then the cap goes in.'),
+  stepLeaf('s1', 'Step 1 \u00b7 Motor', <Step1 />, STEP.motor,
+    'The motor lowers in, a shaft sliding into the gap on each side.'),
+  stepLeaf('s2', 'Step 2 \u00b7 Spindles', <Step2 />, STEP.spindles,
+    'Cap off the shaft, spindle on, then the cap into the spindle centre.'),
+  stepLeaf('s3', 'Step 3 \u00b7 Short legs', <Step3 />, STEP.shortLegs,
+    'Each short leg presses onto its stud, then the nut spins on and tightens down.'),
+  stepLeaf('s4', 'Step 4 \u00b7 Long legs', <Step4 />, STEP.longLegsOnPin,
+    'Both long legs on a side slide onto the same spindle pin.'),
+  stepLeaf('s5', 'Step 5 \u00b7 Leg joints', <Step5 />, STEP.legJoints,
+    'Spacer through the short leg, long leg onto it, then the screw and nut close it up.'),
+  stepLeaf('s6', 'Step 6 \u00b7 Spindle nuts', <Step6 />, STEP.spindleNuts,
+    'One nut holds both long legs on the pin.'),
 
   { id: 'chapter2', tab: 'Electronics', front: <ChapterPage />, back: <PowerFlowPage /> },
 
-  stepLeaf('s8', 'Step 8 · Battery', <Step8 />, STEP.battery,
-    'The battery slides in flat, from the side.'),
-  stepLeaf('s9', 'Step 9 · Switch', <Step9 />, STEP.switch,
-    'The switch pushes into the gap at the back.'),
-  { id: 's10', tab: 'Step 10 · Wiring', front: <Step10Wiring />, back: <PowerFlowPage /> },
-  stepLeaf('s11', 'Step 11 · Top cap', <FinalPage />, STEP.topCap,
+  stepLeaf('s7', 'Step 7 \u00b7 Battery', <Step8 />, STEP.battery,
+    'The battery drops into the channel beside the head.'),
+  stepLeaf('s8', 'Step 8 \u00b7 Switch', <Step9 />, STEP.switch,
+    'The switch pushes into the slot at the back.'),
+  { id: 's9', tab: 'Step 9 \u00b7 Wiring', front: <Step10Wiring />, back: <PowerFlowPage /> },
+  stepLeaf('s10', 'Step 10 \u00b7 Top cap', <FinalPage />, STEP.topCap,
     'The top cap lowers down and clicks into place.', true),
 
   { id: 'trouble', tab: 'Help', front: <TroublePage />, back: <ChapterPage /> },

@@ -57,6 +57,13 @@ export interface Instance {
   arrowTo?: [number, number, number][];
   /** 1-based step that adds this part. */
   step: number;
+  /**
+   * Step at which this part comes back off, if it does. The spindle cap ships
+   * pushed into the end of the motor shaft, so it is on the dog from step 1,
+   * pulled out in step 2, and refitted into the spindle centre in that same
+   * step. Without this the build could only ever gain parts.
+   */
+  removedAt?: number;
   anim: Anim;
 }
 
@@ -138,17 +145,16 @@ const LEGS: LegSpec[] = [
  * legs. The short legs only touch the body, so they go on first.
  */
 export const STEP = {
-  shortLegsRight: 1,
-  shortLegsLeft: 2,
-  motor: 3,
-  spindles: 4,
-  longLegsRight: 5,
-  longLegsLeft: 6,
-  lockUp: 7,
-  battery: 8,
-  switch: 9,
-  wiring: 10,
-  topCap: 11,
+  motor: 1,
+  spindles: 2,
+  shortLegs: 3,
+  longLegsOnPin: 4,
+  legJoints: 5,
+  spindleNuts: 6,
+  battery: 7,
+  switch: 8,
+  wiring: 9,
+  topCap: 10,
 } as const;
 
 /* ------------------------------------------------------------------ *
@@ -163,11 +169,11 @@ function shortLegInstances(spec: LegSpec): Instance[] {
   const pose = POSE[side][at];
   const out = dir(side);
   const tag = `${side}-${at}`;
-  const step = side === 'right' ? STEP.shortLegsRight : STEP.shortLegsLeft;
+  const step = STEP.shortLegs;
 
   const shortLegX = front ? L.shortLegFrontStart : L.shortLegRearStart;
   const studNutX = front ? L.studNutFrontStart : L.studNutRearStart;
-  const lead = front ? 0 : 0.9;
+  const lead = (front ? 0 : 0.9) + (side === 'right' ? 0 : 1.8);
 
   return [
     {
@@ -205,7 +211,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
   const pose = POSE[side][at];
   const out = dir(side);
   const tag = `${side}-${at}`;
-  const step = side === 'right' ? STEP.longLegsRight : STEP.longLegsLeft;
+  const lead2 = side === 'right' ? 0 : 1.8;
 
   const spacerX = front ? L.spacerFrontStart : L.spacerRearStart;
   const longLegX = front ? L.longLegFrontStart : L.longLegRearStart;
@@ -213,7 +219,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
   // The screw is anchored on the outer face of its head, which sits proud of
   // the long leg; the thread then runs inboard through the whole stack.
   const screwHeadX = longLegX + L.plate + L.screwHeadLen;
-  const lead = front ? 0 : 0.9;
+  const lead = (front ? 0 : 0.9) + lead2;
 
   return [
     {
@@ -223,7 +229,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
       side,
       anchor: [A.spacer.x, A.spacer.y, A.spacer.z],
       position: [sx(side, spacerX + L.spacerLen / 2), pose.joint.y, pose.joint.z],
-      step,
+      step: STEP.legJoints,
       anim: { from: [out * 50, 0, 0], delaySec: 0.2 + lead, durationSec: 2.0 },
     },
     {
@@ -242,8 +248,9 @@ function longLegInstances(spec: LegSpec): Instance[] {
         ? [[sx(side, longLegX + L.plate / 2), pose.pin.y, pose.pin.z]]
         : undefined,
       rotX: pose.longAngle,
-      step,
-      anim: { from: [out * 62, -14, -26], delaySec: 2.4 + lead, durationSec: 2.6 },
+      // Hung on the spindle pin first; the spacer joint closes a step later.
+      step: STEP.longLegsOnPin,
+      anim: { from: [out * 62, -14, -26], delaySec: 0.2 + lead, durationSec: 2.6 },
     },
     {
       key: `jointscrew-${tag}`,
@@ -254,7 +261,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
       flipAxis: side === 'right',
       anchor: [A.screw.x, A.screw.y, A.screw.z],
       position: [sx(side, screwHeadX), pose.joint.y, pose.joint.z],
-      step,
+      step: STEP.legJoints,
       anim: { from: [out * 42, 0, 0], spin: Math.PI * 7, delaySec: 5.3 + lead, durationSec: 3.6 },
     },
     {
@@ -266,7 +273,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
       flipAxis: side === 'left',
       anchor: [A.nut.x, A.nut.y, A.nut.z],
       position: [sx(side, jointNutX + NUT_HALF), pose.joint.y, pose.joint.z],
-      step,
+      step: STEP.legJoints,
       anim: { from: [-out * 34, 0, 0], spin: -Math.PI * 6, delaySec: 7.4 + lead, durationSec: 3.4 },
     },
   ];
@@ -300,7 +307,12 @@ function spindleInstances(side: Side): Instance[] {
   ];
 }
 
-/** Cap into the spindle centre, and the nut that traps both long legs. */
+/**
+ * The nut that traps both long legs on the crank pin.
+ *
+ * The spindle cap is no longer here: it ships pushed into the motor shaft, so
+ * it is pulled out and refitted during the spindle step instead.
+ */
 function lockInstances(side: Side): Instance[] {
   const out = dir(side);
   const lead = side === 'right' ? 0 : 2.2;
@@ -312,25 +324,44 @@ function lockInstances(side: Side): Instance[] {
       side,
       flipAxis: side === 'right',
       anchor: [A.nut.x, A.nut.y, A.nut.z],
-      // One nut holds BOTH long legs on the crank pin.
       position: [sx(side, L.crankNutStart + NUT_HALF), POSE[side].front.pin.y, POSE[side].front.pin.z],
-      step: STEP.lockUp,
+      step: STEP.spindleNuts,
       anim: { from: [out * 38, 0, 0], spin: Math.PI * 6, delaySec: 0.2 + lead, durationSec: 2.1 },
+    },
+  ];
+}
+
+/**
+ * The spindle cap, twice over: once stowed in the motor shaft from step 1 and
+ * withdrawn in step 2, and once seated in the spindle centre in step 2.
+ */
+function capInstances(side: Side): Instance[] {
+  const out = dir(side);
+  const lead = side === 'right' ? 0 : 1.6;
+  return [
+    {
+      key: `capstowed-${side}`,
+      stl: STL.spindleCap,
+      color: PART_COLOR.spindleCap,
+      side,
+      flipAxis: side === 'left',
+      anchor: [A.spindleCap.x, A.spindleCap.y, A.spindleCap.z],
+      // Pushed into the bare shaft, inboard of where the spindle will sit.
+      position: [sx(side, RD.SPINDLE_DISC_X - 3), RD.SPINDLE_AXIS.y, RD.SPINDLE_AXIS.z],
+      step: STEP.motor,
+      removedAt: STEP.spindles,
+      anim: { from: [out * 30, 0, 0], delaySec: 3.9, durationSec: 1.4 },
     },
     {
       key: `spindlecap-${side}`,
       stl: STL.spindleCap,
       color: PART_COLOR.spindleCap,
       side,
-      // The cap is a 2 mm pin with a 9 mm head on its local +X end. The pin
-      // has to lead, going into the spindle, with the head left proud on the
-      // outside. On the right, +X already points outboard; on the left it
-      // points at the body, so that side is turned end-for-end.
       flipAxis: side === 'left',
       anchor: [A.spindleCap.x, A.spindleCap.y, A.spindleCap.z],
       position: [sx(side, L.capStart + 4), RD.SPINDLE_AXIS.y, RD.SPINDLE_AXIS.z],
-      step: STEP.lockUp,
-      anim: { from: [out * 45, 0, 0], delaySec: 2.5 + lead, durationSec: 1.9 },
+      step: STEP.spindles,
+      anim: { from: [out * 45, 0, 0], delaySec: 4.4 + lead, durationSec: 1.9 },
     },
   ];
 }
@@ -374,7 +405,9 @@ const ELECTRONICS: Instance[] = [
     // Pushed up against the inside of the left wall (x -5.05) with its 9.6 mm
     // thickness, leaving the rest of the bay clear on the right. Sits in the
     // gap between the head block and the motor, and drops in from above.
-    position: [RD.WALL_LEFT_X + 4.9, -44, -8],
+    // Dropped further into the channel so no part of the cell stands proud
+    // of the shell once the top cap goes on.
+    position: [RD.WALL_LEFT_X + 4.9, -44, -15],
     step: STEP.battery,
     anim: { from: [0, 0, 56], delaySec: 0.51, durationSec: 3.24 },
   },
@@ -382,7 +415,9 @@ const ELECTRONICS: Instance[] = [
     key: 'switch',
     builder: 'switch',
     scaleMm: 9.5,
-    euler: [Math.PI / 2, 0, 0],
+    // Laid on its side so the body runs across the dog rather than along it,
+    // which is the way the rectangular slot in the tail wall is cut.
+    euler: [Math.PI / 2, 0, Math.PI / 2],
     color: '#1C1C1E',
     anchor: [0, 0, 0],
     // The rectangular window is at the tail, so the switch goes in from behind.
@@ -399,7 +434,7 @@ export const INSTANCES: Instance[] = [
     color: PART_COLOR.body,
     anchor: [0, 0, 0],
     position: [0, 0, 0],
-    step: STEP.shortLegsRight,
+    step: STEP.motor,
     anim: { from: [0, 0, 0], delaySec: 0, durationSec: 0.01 },
   },
   ...LEGS.flatMap(shortLegInstances),
@@ -407,6 +442,8 @@ export const INSTANCES: Instance[] = [
   ...ELECTRONICS,
   ...spindleInstances('right'),
   ...spindleInstances('left'),
+  ...capInstances('right'),
+  ...capInstances('left'),
   ...lockInstances('right'),
   ...lockInstances('left'),
   {
@@ -420,12 +457,16 @@ export const INSTANCES: Instance[] = [
   },
 ];
 
-/** Instances already built at the start of a step (drawn solid, no motion). */
-export const builtBefore = (step: number) => INSTANCES.filter((i) => i.step < step);
+/** Present at the start of `step`: fitted earlier and not yet taken off. */
+export const builtBefore = (step: number) =>
+  INSTANCES.filter((i) => i.step < step && (i.removedAt ?? Infinity) > step - 1);
 /** Instances this step adds (drawn animating). */
 export const addedAt = (step: number) => INSTANCES.filter((i) => i.step === step);
-/** Everything built once `step` is complete, for the left-hand progress model. */
-export const builtThrough = (step: number) => INSTANCES.filter((i) => i.step <= step);
+/** Instances this step takes back off. */
+export const removedAt = (step: number) => INSTANCES.filter((i) => i.removedAt === step);
+/** Everything on the dog once `step` is complete. */
+export const builtThrough = (step: number) =>
+  INSTANCES.filter((i) => i.step <= step && (i.removedAt ?? Infinity) > step);
 
 /**
  * Which side of the dog a step works on, so the camera can be put where the
