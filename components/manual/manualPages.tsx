@@ -359,12 +359,14 @@ function Step1() {
         <Steps
           items={[
             <>Body on its belly. The <strong>head</strong> is at one end.</>,
+            <>The <strong>Spindle Caps</strong> come pushed into the motor shafts.
+              <strong> Pull both off</strong> and put them aside for now.</>,
             <>Turn the motor so the <strong>grey part with the wires</strong> points at the
               <strong> back</strong>, the end without the head.</>,
             <>A <strong>shaft</strong> sticks out of each side. Line them up with the two
               <strong> gaps</strong> in the side walls.</>,
             <>Lower it straight down so each shaft <strong>slides into its gap</strong>.</>,
-            <>The <strong>Spindle Cap</strong> is already pushed onto one shaft. Leave it for now.</>,
+
           ]}
         />
         <PlacementStrip step={STEP.motor} />
@@ -385,7 +387,6 @@ function Step2() {
         />
         <Steps
           items={[
-            <>Pull the <strong>Spindle Cap</strong> off the shaft and put it to one side.</>,
             <>Push a <strong>Spindle</strong> onto each shaft, straight on and
               <strong> centred</strong>.</>,
             <>The two spindles point <strong>opposite ways</strong>. One pin up, one pin down.

@@ -49,6 +49,12 @@ export interface Instance {
   /** Which side of the dog this part belongs to, for aiming the step camera. */
   side?: Side;
   /**
+   * Play this part in reverse: it starts seated and travels out to the parked
+   * position, with the arrow pointing away. Used for the spindle caps, which
+   * have to come off the motor shaft before the motor can go in.
+   */
+  reverseArrow?: boolean;
+  /**
    * Extra destinations to draw a placement arrow at, in body-frame mm, on top
    * of the one pointing at `position`. A long leg lands in two places at once,
    * its middle hole on the spacer and its top hole on the spindle pin, and one
@@ -346,11 +352,13 @@ function capInstances(side: Side): Instance[] {
       side,
       flipAxis: side === 'left',
       anchor: [A.spindleCap.x, A.spindleCap.y, A.spindleCap.z],
-      // Pushed into the bare shaft, inboard of where the spindle will sit.
+      // Pushed into the shaft as it ships. It comes straight back off in this
+      // same step, before the motor is lowered in.
       position: [sx(side, RD.SPINDLE_DISC_X - 3), RD.SPINDLE_AXIS.y, RD.SPINDLE_AXIS.z],
       step: STEP.motor,
-      removedAt: STEP.spindles,
-      anim: { from: [out * 30, 0, 0], delaySec: 3.9, durationSec: 1.4 },
+      removedAt: STEP.motor,
+      reverseArrow: true,
+      anim: { from: [out * 34, 0, 0], delaySec: 0.15, durationSec: 1.5 },
     },
     {
       key: `spindlecap-${side}`,
@@ -371,6 +379,19 @@ function capInstances(side: Side): Instance[] {
 /** The motor's own model is ~4.6 units long and needs to end up ~70 mm. */
 const MOTOR_MM = 15.5;
 
+/**
+ * The shafts are not on the motor's origin. buildMotor puts them at model
+ * [0.75, -0.1, +-z], and the orientation maps model X onto the body's -Y and
+ * model Y onto its +Z, so the shaft axis lands 11.6 mm towards the head and
+ * 1.6 mm down from wherever the motor's origin is placed.
+ *
+ * Positioning the origin at the shaft notch therefore missed by that much,
+ * which is what left the shaft sitting beside the gap in the side wall
+ * instead of in it. The offset is subtracted back out here so the SHAFT is
+ * what gets aligned, not the model origin.
+ */
+const MOTOR_SHAFT_OFFSET = { y: -0.75 * MOTOR_MM, z: -0.1 * MOTOR_MM };
+
 const ELECTRONICS: Instance[] = [
   {
     key: 'motor',
@@ -387,9 +408,13 @@ const ELECTRONICS: Instance[] = [
     bodyEuler: [0, 0, Math.PI],
     color: '#F2C230',
     anchor: [0, 0, 0],
-    position: [RD.MID_X, RD.SPINDLE_AXIS.y, RD.SPINDLE_AXIS.z],
+    position: [
+      RD.MID_X,
+      RD.SPINDLE_AXIS.y - MOTOR_SHAFT_OFFSET.y,
+      RD.SPINDLE_AXIS.z - MOTOR_SHAFT_OFFSET.z,
+    ],
     step: STEP.motor,
-    anim: { from: [0, 0, 62], delaySec: 0.51, durationSec: 3.24 },
+    anim: { from: [0, 0, 62], delaySec: 2.1, durationSec: 3.24 },
   },
   {
     key: 'battery',

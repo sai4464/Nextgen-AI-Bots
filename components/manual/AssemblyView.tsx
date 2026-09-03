@@ -448,8 +448,15 @@ export function AssemblyView({
           arrow.position.sub(BODY_CENTRE);
           world.add(arrow);
         };
-        draw(target);
-        for (const extra of inst.arrowTo ?? []) draw(new THREE.Vector3(...extra));
+        if (inst.reverseArrow) {
+          // Coming off, so the arrow runs from the hole out to the parked part.
+          const arrow = buildArrow(target.clone().lerp(parked, 0.18), target.clone().lerp(parked, 0.88));
+          arrow.position.sub(BODY_CENTRE);
+          world.add(arrow);
+        } else {
+          draw(target);
+          for (const extra of inst.arrowTo ?? []) draw(new THREE.Vector3(...extra));
+        }
       }
     }
 
@@ -481,7 +488,7 @@ export function AssemblyView({
             t = easeInOut(Math.min(Math.max(local, 0), 1));
           }
         }
-        const { q, pos } = poseOf(l.inst, t);
+        const { q, pos } = poseOf(l.inst, l.inst.reverseArrow ? 1 - t : t);
         l.obj.quaternion.copy(q);
         l.obj.position.copy(pos).sub(BODY_CENTRE);
         // Hide a moving part until its moment arrives.
