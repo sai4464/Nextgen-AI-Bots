@@ -9,6 +9,13 @@ export interface Anim {
   spin?: number;
   delaySec: number;
   durationSec: number;
+  /**
+   * When the part becomes visible, if that is not simply when it starts
+   * moving. The motor has to be on screen, held above the body, while the
+   * spindle caps are pulled out of its shafts; it only begins its own descent
+   * afterwards.
+   */
+  appearAt?: number;
 }
 
 export interface Instance {
@@ -19,6 +26,13 @@ export interface Instance {
   builder?: 'motor' | 'battery' | 'switch' | 'connector';
   /** Uniform scale applied to a procedural part, in mm per model unit. */
   scaleMm?: number;
+  /**
+   * Build this electronic part without its flying leads. The pouch cell is
+   * modelled with its tails on the -X end, which the body orientation sends
+   * out through the head wall, so its wires are left off the assembly figure
+   * and the wiring chapter shows them instead.
+   */
+  hideWires?: boolean;
   /** Euler rotation applied in the part's own model frame. */
   euler?: [number, number, number];
   /**
@@ -150,18 +164,47 @@ const LEGS: LegSpec[] = [
  * spindle's crank pin, so the order has to be motor, then spindle, then long
  * legs. The short legs only touch the body, so they go on first.
  */
+/*
+ * The leg build runs one side at a time, right through to a finished side,
+ * then the whole sequence again on the left.
+ *
+ * Doing both sides at once meant a child holding four loose legs and reading
+ * "two per side, four in total" off one page. Finishing a side first gives
+ * them a worked example to copy, and halves how much is flapping about while
+ * they work.
+ */
 export const STEP = {
   motor: 1,
   spindles: 2,
   shortLegs: 3,
-  longLegsOnPin: 4,
-  legJoints: 5,
-  spindleNuts: 6,
-  battery: 7,
-  switch: 8,
-  wiring: 9,
-  topCap: 10,
+
+  /** Right side: spacer in, then the long leg onto the spindle pin and it. */
+  longLegsRight: 4,
+  /** Right side: the nut that traps both long legs on the crank pin. */
+  spindleNutRight: 5,
+  /** Right side: screw through the stack, nut on the back. */
+  legJointsRight: 6,
+
+  /** Left side: the same three moves over again. */
+  longLegsLeft: 7,
+  spindleNutLeft: 8,
+  legJointsLeft: 9,
+
+  battery: 10,
+  switch: 11,
+  wiring: 12,
+  topCap: 13,
 } as const;
+
+/** Which step fits this side's spacers and long legs. */
+export const longLegsStep = (side: Side) =>
+  side === 'right' ? STEP.longLegsRight : STEP.longLegsLeft;
+/** Which step puts this side's nut on the crank pin. */
+export const spindleNutStep = (side: Side) =>
+  side === 'right' ? STEP.spindleNutRight : STEP.spindleNutLeft;
+/** Which step closes this side's two leg joints. */
+export const legJointsStep = (side: Side) =>
+  side === 'right' ? STEP.legJointsRight : STEP.legJointsLeft;
 
 /* ------------------------------------------------------------------ *
  * Build the instance list                                              *
@@ -217,7 +260,10 @@ function longLegInstances(spec: LegSpec): Instance[] {
   const pose = POSE[side][at];
   const out = dir(side);
   const tag = `${side}-${at}`;
-  const lead2 = side === 'right' ? 0 : 1.8;
+  // Each side is now its own step, so the only stagger left within a step is
+  // front against rear. The old cross-side offset would just be dead time.
+  const legStep = longLegsStep(side);
+  const jointStep = legJointsStep(side);
 
   const spacerX = front ? L.spacerFrontStart : L.spacerRearStart;
   const longLegX = front ? L.longLegFrontStart : L.longLegRearStart;
@@ -225,7 +271,7 @@ function longLegInstances(spec: LegSpec): Instance[] {
   // The screw is anchored on the outer face of its head, which sits proud of
   // the long leg; the thread then runs inboard through the whole stack.
   const screwHeadX = longLegX + L.plate + L.screwHeadLen;
-  const lead = (front ? 0 : 0.9) + lead2;
+  const lead = front ? 0 : 0.9;
 
   return [
     {
@@ -235,7 +281,9 @@ function longLegInstances(spec: LegSpec): Instance[] {
       side,
       anchor: [A.spacer.x, A.spacer.y, A.spacer.z],
       position: [sx(side, spacerX + L.spacerLen / 2), pose.joint.y, pose.joint.z],
-      step: STEP.legJoints,
+      // Seated before its long leg, in the same step: the leg's middle hole
+      // drops onto the spacer, so the spacer has to be there first.
+      step: legStep,
       anim: { from: [out * 50, 0, 0], delaySec: 0.2 + lead, durationSec: 2.0 },
     },
     {
@@ -254,9 +302,10 @@ function longLegInstances(spec: LegSpec): Instance[] {
         ? [[sx(side, longLegX + L.plate / 2), pose.pin.y, pose.pin.z]]
         : undefined,
       rotX: pose.longAngle,
-      // Hung on the spindle pin first; the spacer joint closes a step later.
-      step: STEP.longLegsOnPin,
-      anim: { from: [out * 62, -14, -26], delaySec: 0.2 + lead, durationSec: 2.6 },
+      // Onto the spindle pin at the top and the spacer at the middle, after
+      // the spacer has gone in. The screw and nut close it two steps later.
+      step: legStep,
+      anim: { from: [out * 62, -14, -26], delaySec: 2.6 + lead, durationSec: 2.6 },
     },
     {
       key: `jointscrew-${tag}`,
@@ -267,8 +316,8 @@ function longLegInstances(spec: LegSpec): Instance[] {
       flipAxis: side === 'right',
       anchor: [A.screw.x, A.screw.y, A.screw.z],
       position: [sx(side, screwHeadX), pose.joint.y, pose.joint.z],
-      step: STEP.legJoints,
-      anim: { from: [out * 42, 0, 0], spin: Math.PI * 7, delaySec: 5.3 + lead, durationSec: 3.6 },
+      step: jointStep,
+      anim: { from: [out * 42, 0, 0], spin: Math.PI * 7, delaySec: 0.2 + lead, durationSec: 3.0 },
     },
     {
       key: `jointnut-${tag}`,
@@ -279,8 +328,8 @@ function longLegInstances(spec: LegSpec): Instance[] {
       flipAxis: side === 'left',
       anchor: [A.nut.x, A.nut.y, A.nut.z],
       position: [sx(side, jointNutX + NUT_HALF), pose.joint.y, pose.joint.z],
-      step: STEP.legJoints,
-      anim: { from: [-out * 34, 0, 0], spin: -Math.PI * 6, delaySec: 7.4 + lead, durationSec: 3.4 },
+      step: jointStep,
+      anim: { from: [-out * 34, 0, 0], spin: -Math.PI * 6, delaySec: 2.4 + lead, durationSec: 3.0 },
     },
   ];
 }
@@ -321,7 +370,6 @@ function spindleInstances(side: Side): Instance[] {
  */
 function lockInstances(side: Side): Instance[] {
   const out = dir(side);
-  const lead = side === 'right' ? 0 : 2.2;
   return [
     {
       key: `cranknut-${side}`,
@@ -331,19 +379,24 @@ function lockInstances(side: Side): Instance[] {
       flipAxis: side === 'right',
       anchor: [A.nut.x, A.nut.y, A.nut.z],
       position: [sx(side, L.crankNutStart + NUT_HALF), POSE[side].front.pin.y, POSE[side].front.pin.z],
-      step: STEP.spindleNuts,
-      anim: { from: [out * 38, 0, 0], spin: Math.PI * 6, delaySec: 0.2 + lead, durationSec: 2.1 },
+      step: spindleNutStep(side),
+      anim: { from: [out * 38, 0, 0], spin: Math.PI * 6, delaySec: 0.2, durationSec: 2.1 },
     },
   ];
 }
 
 /**
- * The spindle cap, twice over: once stowed in the motor shaft from step 1 and
- * withdrawn in step 2, and once seated in the spindle centre in step 2.
+ * The spindle cap as it ships: pushed into the motor's shaft, and drawn back
+ * out of it in step 1 before the motor goes anywhere.
+ *
+ * It is positioned at the RAISED shaft height, not the seated one, because at
+ * this point in the step the motor is still being held above the body. Pulling
+ * a cap out of thin air where the motor is going to end up was the old
+ * behaviour and read as nonsense.
  */
-function capInstances(side: Side): Instance[] {
+function stowedCapInstances(side: Side): Instance[] {
   const out = dir(side);
-  const lead = side === 'right' ? 0 : 1.6;
+  const lead = side === 'right' ? 0 : 0.7;
   return [
     {
       key: `capstowed-${side}`,
@@ -352,14 +405,26 @@ function capInstances(side: Side): Instance[] {
       side,
       flipAxis: side === 'left',
       anchor: [A.spindleCap.x, A.spindleCap.y, A.spindleCap.z],
-      // Pushed into the shaft as it ships. It comes straight back off in this
-      // same step, before the motor is lowered in.
-      position: [sx(side, RD.SPINDLE_DISC_X - 3), RD.SPINDLE_AXIS.y, RD.SPINDLE_AXIS.z],
+      position: [
+        sx(side, RD.SPINDLE_DISC_X - 3),
+        RD.SPINDLE_AXIS.y,
+        RD.SPINDLE_AXIS.z + MOTOR_LIFT,
+      ],
       step: STEP.motor,
       removedAt: STEP.motor,
       reverseArrow: true,
-      anim: { from: [out * 34, 0, 0], delaySec: 0.15, durationSec: 1.5 },
+      // Played in reverse, so `from` is where it ends up: outboard of the
+      // shaft and lifted clear, as if set aside on the table.
+      anim: { from: [out * 38, 0, 14], delaySec: 0.35 + lead, durationSec: 1.5 },
     },
+  ];
+}
+
+/** The spindle cap in its final home, pressed into the spindle centre. */
+function capInstances(side: Side): Instance[] {
+  const out = dir(side);
+  const lead = side === 'right' ? 0 : 1.6;
+  return [
     {
       key: `spindlecap-${side}`,
       stl: STL.spindleCap,
@@ -378,6 +443,15 @@ function capInstances(side: Side): Instance[] {
 
 /** The motor's own model is ~4.6 units long and needs to end up ~70 mm. */
 const MOTOR_MM = 15.5;
+
+/**
+ * How high the motor is held above the body before it drops in.
+ *
+ * Shared with the stowed spindle caps: they ship pushed into the motor's
+ * shafts, so they have to sit at the RAISED shaft height and be drawn out of
+ * the motor there, before the motor itself travels anywhere.
+ */
+const MOTOR_LIFT = 62;
 
 /**
  * The shafts are not on the motor's origin. buildMotor puts them at model
@@ -414,7 +488,9 @@ const ELECTRONICS: Instance[] = [
       RD.SPINDLE_AXIS.z - MOTOR_SHAFT_OFFSET.z,
     ],
     step: STEP.motor,
-    anim: { from: [0, 0, 62], delaySec: 2.1, durationSec: 3.24 },
+    // Visible from the first frame, held up where the caps can be pulled out
+    // of it, and only then lowered away.
+    anim: { from: [0, 0, MOTOR_LIFT], delaySec: 2.4, durationSec: 3.24, appearAt: 0 },
   },
   {
     key: 'battery',
@@ -427,12 +503,21 @@ const ELECTRONICS: Instance[] = [
     euler: [Math.PI / 2, Math.PI / 2, 0],
     color: '#D9B44A',
     anchor: [0, 0, 0],
-    // Pushed up against the inside of the left wall (x -5.05) with its 9.6 mm
-    // thickness, leaving the rest of the bay clear on the right. Sits in the
-    // gap between the head block and the motor, and drops in from above.
-    // Dropped further into the channel so no part of the cell stands proud
-    // of the shell once the top cap goes on.
-    position: [RD.WALL_LEFT_X + 4.9, -44, -15],
+    // Leads left off: the model puts them on its -X end, which this
+    // orientation aims at the head, so they used to spear straight out
+    // through the front wall.
+    hideWires: true,
+    // Centred across the bay rather than shoved up against a wall. Hugging the
+    // left wall read as a mistake in the figure, and it buys nothing: the cell
+    // is only 9.6 mm through and the bay is 28 mm, so there is room either
+    // side.
+    //
+    // Along the body it is pushed back towards the motor. The cell measures
+    // 2.6 model units, or 40.3 mm, along Y; centred at -44 its nose reached
+    // y -64.2 and punched through the head wall, whose inner face is at
+    // y -61.3. At -38 it stops at -58.2, inside the shell with room to spare,
+    // and its tail at -17.9 is still well clear of the motor can at y 5.
+    position: [RD.MID_X, -38, -15],
     step: STEP.battery,
     anim: { from: [0, 0, 56], delaySec: 0.51, durationSec: 3.24 },
   },
@@ -440,15 +525,36 @@ const ELECTRONICS: Instance[] = [
     key: 'switch',
     builder: 'switch',
     scaleMm: 9.5,
-    // Laid on its side so the body runs across the dog rather than along it,
-    // which is the way the rectangular slot in the tail wall is cut.
-    euler: [Math.PI / 2, 0, Math.PI / 2],
+    /*
+     * The switch model faces down its own +Z: bezel and rocker at +Z, spade
+     * terminals and leads at -Z. The rocker has to end up facing OUT of the
+     * tail, with the wires leading the way into the slot, so this maps
+     *
+     *   model +Z (rocker) -> body +Y (tail)
+     *   model +Y (long side of the bezel) -> body +X (across the dog)
+     *   model +X -> body +Z (up)
+     *
+     * which is the cyclic permutation below. The previous pair of quarter
+     * turns had model +Z landing on body -Y, i.e. the rocker pointing into
+     * the dog and the terminals poking out of the back wall.
+     */
+    euler: [-Math.PI / 2, 0, -Math.PI / 2],
     color: '#1C1C1E',
     anchor: [0, 0, 0],
-    // The rectangular window is at the tail, so the switch goes in from behind.
-    position: [RD.MID_X, 74, 2],
+    /*
+     * Measured off the tail wall rather than guessed. The rectangular slot in
+     * the outer rear face (y 86) spans x -0.7..19.5 and z -15.1..-3.3, so it
+     * is 20.1 mm across by 11.8 mm tall, centred at z -9.2.
+     *
+     * The housing is 16.6 x 11.4 mm and passes through that slot; the bezel is
+     * 20.4 x 14.7 mm and cannot, which is what makes it the flange. Sitting the
+     * bezel's inner face on y 86 therefore buries the housing inside the wall
+     * bore and leaves only the bezel and the rocker proud, the rocker standing
+     * about 4.8 mm out where a finger can reach it.
+     */
+    position: [RD.MID_X, 86.9, -9.2],
     step: STEP.switch,
-    anim: { from: [0, 40, 0], delaySec: 0.51, durationSec: 2.88 },
+    anim: { from: [0, 46, 0], delaySec: 0.51, durationSec: 2.88 },
   },
 ];
 
@@ -464,6 +570,10 @@ export const INSTANCES: Instance[] = [
   },
   ...LEGS.flatMap(shortLegInstances),
   ...LEGS.flatMap(longLegInstances),
+  // Before the motor: step 1's placement figures are built in this order, and
+  // the caps come off the motor before it is lowered in.
+  ...stowedCapInstances('right'),
+  ...stowedCapInstances('left'),
   ...ELECTRONICS,
   ...spindleInstances('right'),
   ...spindleInstances('left'),

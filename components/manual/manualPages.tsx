@@ -6,9 +6,19 @@ import { BookLeaf } from './FlipBook';
 import { Viewer3D } from './Viewer3D';
 import { AssemblyView, ViewAxis } from './AssemblyView';
 import { Confetti } from './Confetti';
-import { builtThrough, builtBefore, addedAt, stepSide, STEP } from '@/lib/robo-dog-steps';
-import type { Instance } from '@/lib/robo-dog-steps';
-import { WiringDiagram, WiringList } from './WiringDiagram';
+import {
+  builtThrough,
+  builtBefore,
+  addedAt,
+  stepSide,
+  STEP,
+  longLegsStep,
+  spindleNutStep,
+  legJointsStep,
+} from '@/lib/robo-dog-steps';
+import type { Instance, Side } from '@/lib/robo-dog-steps';
+import { WiringDiagram, WiringList, ReversedWiringList } from './WiringDiagram';
+import { ConnectorGuide } from './ConnectorGuide';
 import { PageHeader, PartsCallout, Caution, Steps, SafetyGrid } from './PageParts';
 
 const p = partById;
@@ -105,8 +115,21 @@ function PlacementStrip({ step }: { step: number }) {
     >
       {groups.map((group, i) => {
         const { axis, flip, zoom } = stationFor(group);
-        // Everything from the earlier panels is already on the dog.
-        const fitted = before.concat(...groups.slice(0, i));
+        // Everything from the earlier panels is already on the dog, except
+        // anything this step takes back off: a spindle cap pulled out in
+        // panel 1 must not be back in its shaft in panel 2.
+        const fitted = before
+          .concat(...groups.slice(0, i))
+          .filter((x) => x.removedAt !== step);
+        // Parts that are in shot from the first frame without being the
+        // subject yet. The motor is held above the body while its caps are
+        // drawn out, so it belongs in that panel, parked and un-arrowed.
+        const context = addedAt(step).filter(
+          (x) =>
+            x.anim.appearAt === 0 &&
+            !group.includes(x) &&
+            !fitted.includes(x)
+        );
         return (
           <div
             key={group[0].key}
@@ -114,7 +137,7 @@ function PlacementStrip({ step }: { step: number }) {
           >
             <AssemblyView
               settled={fitted}
-              animating={group}
+              animating={group.concat(context)}
               focus={group}
               staticPose
               interactive={false}
@@ -426,74 +449,119 @@ function Step3() {
   );
 }
 
-function Step4() {
+/*
+ * The leg build, one side at a time.
+ *
+ * Each side gets the same three pages -- spacers and long legs, the spindle
+ * nut, then the two joint screws -- so a child finishes one whole side and
+ * then copies it. `SIDE_WORD` is what they are told to look at; `Side` is what
+ * the 3D view is keyed on.
+ */
+const SIDE_WORD = { right: 'RIGHT', left: 'LEFT' } as const;
+
+function SideBadge({ side }: { side: Side }) {
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout items={[{ part: p('longLeg'), qty: 4 }]} />
-        <Steps
-          items={[
-            <>Find the <strong>pin</strong> sticking out of each spindle.</>,
-            <>Slide the <strong>top hole</strong> of a <strong>Long Leg</strong> onto that pin.</>,
-            <>Then a second Long Leg onto the <strong>same pin</strong>, next to the first.</>,
-            <>Two long legs per side, four in total. They just hang there for now.</>,
-          ]}
-        />
-        <PlacementStrip step={STEP.longLegsOnPin} />
-      </div>
+    <div className="flex items-center gap-2 rounded-xl border-[3px] border-neutral-900/85 bg-[#FFF3C4] px-3 py-1.5">
+      <span className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-neutral-600">
+        Working on the
+      </span>
+      <span className="text-[17px] font-black text-[#D72638]">{SIDE_WORD[side]} side</span>
     </div>
   );
 }
 
-function Step5() {
+/** Spacers and the two long legs, one side. */
+function StepLongLegs({ side }: { side: Side }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
+        <SideBadge side={side} />
         <PartsCallout
           items={[
-            { part: p('specialSpacer'), qty: 4 },
-            { part: p('screw'), qty: 4 },
-            { part: p('nut'), qty: 4 },
+            { part: p('specialSpacer'), qty: 2 },
+            { part: p('longLeg'), qty: 2 },
           ]}
         />
         <Steps
           items={[
-            <>Push a <strong>Spacer</strong> right through the hole in each
-              <strong> Short Leg</strong>, all the way in.</>,
-            <>The long leg <strong>closest to the body</strong> goes to the
-              <strong> back</strong> short leg. The outer one goes to the front.</>,
-            <>Drop that long leg&rsquo;s middle hole onto the end of the Spacer.</>,
-            <><strong>Screw</strong> in from the outside, head facing you.
-              <strong> Nut</strong> on the inside end. {TIGHTEN}</>,
-            <>Do all <strong>four</strong> joints the same way.</>,
+            <><strong>Spacer first.</strong> Push one right through the hole in each
+              <strong> Short Leg</strong> on this side, all the way in.</>,
+            <>Find the <strong>pin</strong> sticking out of this side&rsquo;s spindle.</>,
+            <>Slide the <strong>top hole</strong> of a <strong>Long Leg</strong> onto that pin,
+              then drop its middle hole onto a Spacer.</>,
+            <>The long leg you put on <strong>first</strong> is the one nearest the body, and it
+              goes to the <strong>BACK</strong> short leg. The second one goes to the front.</>,
+            <>Two long legs on this side. They stay loose for now.</>,
           ]}
         />
-        <PlacementStrip step={STEP.legJoints} />
+        <PlacementStrip step={longLegsStep(side)} />
       </div>
     </div>
   );
 }
 
-function Step6() {
+/** The nut that traps both long legs on the crank pin, one side. */
+function StepSpindleNut({ side }: { side: Side }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
-        <PartsCallout items={[{ part: p('nut'), qty: 2 }]} />
+        <SideBadge side={side} />
+        <PartsCallout items={[{ part: p('nut'), qty: 1 }]} />
         <Steps
           items={[
+            <>Hold both <strong>Long Legs</strong> on the pin so they do not slip off.</>,
             <>One <strong>Nut</strong> onto the spindle pin, past both long legs.</>,
             <>{TIGHTEN} The legs must still swing freely.</>,
-            <>Other side too.</>,
-            <>Turn a spindle <strong>slowly</strong> by hand and watch it walk.</>,
           ]}
         />
-        <div className="rounded-2xl border-[3px] border-[#5FCF7F] bg-green-50/70 p-3.5">
-          <p className="text-[17px] font-extrabold text-green-900">The body is finished!</p>
-          <p className="mt-1 text-[14.5px] text-green-800">
-            Next comes the Electronics chapter, where you give your Robo-Dog its power.
-          </p>
-        </div>
-        <PlacementStrip step={STEP.spindleNuts} />
+        <PlacementStrip step={spindleNutStep(side)} />
+      </div>
+    </div>
+  );
+}
+
+/** The two joint screws and their nuts, one side. */
+function StepLegJoints({ side }: { side: Side }) {
+  const first = side === 'right';
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex min-h-0 flex-1 flex-col space-y-3">
+        <SideBadge side={side} />
+        <PartsCallout
+          items={[
+            { part: p('screw'), qty: 2 },
+            { part: p('nut'), qty: 2 },
+          ]}
+        />
+        <Steps
+          items={[
+            <>Line up the two holes and the Spacer between them.</>,
+            <><strong>Screw</strong> in from the outside, head facing you, thread going in
+              towards the dog.</>,
+            <><strong>Nut</strong> onto the inside end of the screw. {TIGHTEN}</>,
+            <>Do <strong>both</strong> joints on this side the same way.</>,
+          ]}
+        />
+        {first ? (
+          <div className="rounded-2xl border-[3px] border-[#5FCF7F] bg-green-50/70 p-3">
+            <p className="text-[16px] font-extrabold text-green-900">
+              One side finished!
+            </p>
+            <p className="mt-0.5 text-[14px] text-green-800">
+              Now do the <strong>LEFT</strong> side exactly the same way. The next three pages
+              walk you through it again.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-2xl border-[3px] border-[#5FCF7F] bg-green-50/70 p-3">
+            <p className="text-[16px] font-extrabold text-green-900">The body is finished!</p>
+            <p className="mt-0.5 text-[14px] text-green-800">
+              Turn a spindle <strong>slowly</strong> by hand and watch it walk. Next comes the
+              Electronics chapter.
+            </p>
+          </div>
+        )}
+        <PlacementStrip step={legJointsStep(side)} />
       </div>
     </div>
   );
@@ -528,7 +596,8 @@ function Step8() {
             <>Stand the <strong>Battery</strong> up on its <strong>thin edge</strong>, not flat.</>,
             <>Wires point to the <strong>back</strong>.</>,
             <>Lower it into the channel between the <strong>head</strong> and the motor.</>,
-            <>Push it against the <strong>left wall</strong> so it sits fully inside the body.</>,
+            <>Keep it in the <strong>middle</strong>, not squashed against either wall, and
+              press it down until it sits fully inside the body.</>,
           ]}
         />
         <Caution tone="danger">
@@ -548,12 +617,44 @@ function Step9() {
         <Steps
           items={[
             <>Find the rectangular <strong>slot</strong> in the back wall.</>,
-            <>Hold the <strong>Switch</strong> so it is <strong>wide side across</strong>, then
-              push it in until it <strong>clicks</strong>.</>,
+            <>Point the <strong>two wires</strong> at the slot. They go in
+              <strong> first</strong>, and the black <strong>rocker</strong> you press stays
+              on the outside where you can reach it.</>,
+            <>Hold it <strong>wide side across</strong>, then push it in until it
+              <strong> clicks</strong>.</>,
             <>Leave it set to <strong>O</strong>.</>,
           ]}
         />
         <PlacementStrip step={STEP.switch} />
+      </div>
+    </div>
+  );
+}
+
+/** Right-hand page of the connector spread: how to tell a wire is really in. */
+function ConnectorCheckPage() {
+  return (
+    <div className="flex h-full flex-col">
+      <PageHeader title="Is the wire really in?" kicker="Check every join" />
+      <PartsCallout items={[{ part: p('connector'), qty: 3 }]} />
+      <div className="mt-3 space-y-2">
+        {[
+          ['Tug it.', 'Hold the connector in one hand and pull the wire with the other. A wire that is properly clamped will not budge.'],
+          ['Look for copper.', 'You should see no bare copper outside the connector. If you can see some, the wire did not go all the way in.'],
+          ['One wire per hole.', 'Never push two wires into the same hole. Each hole takes exactly one.'],
+          ['Lever all the way down.', 'A lever left half closed grips nothing at all, even though it looks shut.'],
+        ].map(([q, a]) => (
+          <div key={q} className="rounded-xl border-2 border-neutral-300 p-2.5">
+            <p className="text-[15.5px] font-extrabold text-neutral-900">{q}</p>
+            <p className="mt-0.5 text-[14px] leading-snug text-neutral-600">{a}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3">
+        <Caution tone="danger">
+          Practise on the <strong>black</strong> wires first. Do not join anything to the
+          battery until the next page tells you exactly which pairs to make.
+        </Caution>
       </div>
     </div>
   );
@@ -565,8 +666,15 @@ function Step10Wiring() {
       <div className="flex min-h-0 flex-1 flex-col space-y-3">
         <PartsCallout items={[{ part: p('connector'), qty: 3 }]} />
         <div className="rounded-2xl border-[3px] border-neutral-900/85 bg-white/60 p-3.5">
-          <p className="mb-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-neutral-600">
+          <p className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-neutral-600">
             Join exactly these three pairs
+          </p>
+          <p className="mb-2 mt-1 text-[14px] leading-snug text-neutral-600">
+            One <strong>orange lever connector</strong> per pair, three in total. The numbered
+            <span className="mx-1 inline-grid h-5 w-5 place-items-center rounded bg-[#F26722] align-text-bottom text-[11px] font-black text-white">
+              1
+            </span>
+            orange squares in the picture opposite are these same connectors.
           </p>
           <WiringList />
         </div>
@@ -610,7 +718,8 @@ function FinalPage() {
   return (
     <div className="relative flex h-full flex-col">
       <Confetti fire={fire} />
-      <div className="flex min-h-0 flex-1 flex-col space-y-3">
+      {/* Tighter than the other pages: this one also carries the backwards fix. */}
+      <div className="flex min-h-0 flex-1 flex-col space-y-2.5">
         <PartsCallout items={[{ part: p('topCap'), qty: 1 }]} />
         <Steps
           items={[
@@ -619,10 +728,26 @@ function FinalPage() {
             <>On the floor, fingers clear, press <strong>I</strong>.</>,
           ]}
         />
-        <div className="rounded-2xl border-[3px] border-[#5FCF7F] bg-green-50/70 p-4 text-center">
-          <p className="text-[24px] font-black text-green-900">YOU DID IT!</p>
-          <p className="mt-1 text-[15px] text-green-800">Your Robo-Dog is alive. Watch it walk!</p>
+        <div className="rounded-2xl border-[3px] border-[#5FCF7F] bg-green-50/70 p-3 text-center">
+          <p className="text-[22px] font-black text-green-900">YOU DID IT!</p>
+          <p className="mt-0.5 text-[14.5px] text-green-800">Your Robo-Dog is alive. Watch it walk!</p>
         </div>
+
+        <div className="rounded-2xl border-[3px] border-neutral-900/85 bg-white/60 p-3">
+          <p className="text-[15.5px] font-extrabold leading-snug text-neutral-900">
+            Walking <span className="text-[#D72638]">backwards</span>?
+          </p>
+          <p className="mt-1 text-[14px] leading-snug text-neutral-600">
+            Nothing is broken. Swap the battery&rsquo;s <strong>red</strong> and
+            <strong> black</strong> wires over at their output, so each one goes into the
+            other&rsquo;s connector. The motor then spins the other way. This is the corrected
+            wiring:
+          </p>
+          <div className="mt-2">
+            <ReversedWiringList />
+          </div>
+        </div>
+
         <Caution tone="danger">
           Warm, smells burnt, or straining? Press <strong>O</strong> and get a grown-up.
         </Caution>
@@ -637,7 +762,7 @@ function TroublePage() {
     ['It buzzes but does not walk', 'A joint is too tight or a leg is hitting the body. Switch off, then turn a spindle by hand to find where it catches.'],
     ['It walks in circles', 'One side has more friction than the other. Check every nut is tightened all the way and no leg is rubbing.'],
     ['A leg flops loose', 'A nut has come undone. Tighten it all the way.'],
-    ['It walks backwards', 'Swap the two wires in connector 1. The motor spins the other way. Nothing gets damaged.'],
+    ['It walks backwards', 'Swap the battery\u2019s red and black wires over at their output, so each goes into the other\u2019s connector. The motor spins the other way. Nothing gets damaged. The corrected wiring is drawn on the Top Cap page, at the end of the build.'],
     ['It stops after a while', 'The battery is flat. Ask a grown-up to charge it, and never charge it alone or overnight.'],
   ];
   return (
@@ -689,21 +814,36 @@ export const MANUAL_LEAVES: BookLeaf[] = [
     'Cap off the shaft, spindle on, then the cap into the spindle centre.'),
   stepLeaf('s3', 'Step 3 \u00b7 Short legs', <Step3 />, STEP.shortLegs,
     'Each short leg presses onto its stud, then the nut spins on and tightens down.'),
-  stepLeaf('s4', 'Step 4 \u00b7 Long legs', <Step4 />, STEP.longLegsOnPin,
-    'Both long legs on a side slide onto the same spindle pin.'),
-  stepLeaf('s5', 'Step 5 \u00b7 Leg joints', <Step5 />, STEP.legJoints,
-    'Spacer through the short leg, long leg onto it, then the screw and nut close it up.'),
-  stepLeaf('s6', 'Step 6 \u00b7 Spindle nuts', <Step6 />, STEP.spindleNuts,
-    'One nut holds both long legs on the pin.'),
+  // Right side, start to finish, then the same three moves on the left.
+  stepLeaf('s4', 'Step 4 \u00b7 Right long legs', <StepLongLegs side="right" />,
+    STEP.longLegsRight,
+    'Right side: spacer through the short leg first, then the long leg onto the pin and the spacer.'),
+  stepLeaf('s5', 'Step 5 \u00b7 Right spindle nut', <StepSpindleNut side="right" />,
+    STEP.spindleNutRight,
+    'Right side: one nut holds both long legs on the pin.'),
+  stepLeaf('s6', 'Step 6 \u00b7 Right leg joints', <StepLegJoints side="right" />,
+    STEP.legJointsRight,
+    'Right side: the screw threads through the stack and the nut winds on behind it.'),
+
+  stepLeaf('s7', 'Step 7 \u00b7 Left long legs', <StepLongLegs side="left" />,
+    STEP.longLegsLeft,
+    'Left side: the same again, spacer first, then the long leg onto the pin and the spacer.'),
+  stepLeaf('s8', 'Step 8 \u00b7 Left spindle nut', <StepSpindleNut side="left" />,
+    STEP.spindleNutLeft,
+    'Left side: one nut holds both long legs on the pin.'),
+  stepLeaf('s9', 'Step 9 \u00b7 Left leg joints', <StepLegJoints side="left" />,
+    STEP.legJointsLeft,
+    'Left side: the screw threads through the stack and the nut winds on behind it.'),
 
   { id: 'chapter2', tab: 'Electronics', front: <ChapterPage />, back: <PowerFlowPage /> },
 
-  stepLeaf('s7', 'Step 7 \u00b7 Battery', <Step8 />, STEP.battery,
+  stepLeaf('s10', 'Step 10 \u00b7 Battery', <Step8 />, STEP.battery,
     'The battery drops into the channel beside the head.'),
-  stepLeaf('s8', 'Step 8 \u00b7 Switch', <Step9 />, STEP.switch,
+  stepLeaf('s11', 'Step 11 \u00b7 Switch', <Step9 />, STEP.switch,
     'The switch pushes into the slot at the back.'),
-  { id: 's9', tab: 'Step 9 \u00b7 Wiring', front: <Step10Wiring />, back: <PowerFlowPage /> },
-  stepLeaf('s10', 'Step 10 \u00b7 Top cap', <FinalPage />, STEP.topCap,
+  { id: 'wago', tab: 'Using a connector', front: <ConnectorGuide />, back: <ConnectorCheckPage /> },
+  { id: 's12', tab: 'Step 12 \u00b7 Wiring', front: <Step10Wiring />, back: <PowerFlowPage /> },
+  stepLeaf('s13', 'Step 13 \u00b7 Top cap', <FinalPage />, STEP.topCap,
     'The top cap lowers down and clicks into place.', true),
 
   { id: 'trouble', tab: 'Help', front: <TroublePage />, back: <ChapterPage /> },

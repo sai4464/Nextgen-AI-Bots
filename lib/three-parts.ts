@@ -129,8 +129,15 @@ export function buildSwitch(showWires = true): THREE.Group {
   }
 
   if (showWires) {
-    g.add(wire(new THREE.Vector3(0, 0.42, -0.95), new THREE.Vector3(0.15, 0.5, -1), WIRE_RED, 1.0));
-    g.add(wire(new THREE.Vector3(0, -0.42, -0.95), new THREE.Vector3(0.15, -0.5, -1), WIRE_BLACK, 1.0));
+    // The switch is drawn at 9.5 mm per unit against the motor and battery's
+    // 15.5, so leads authored at the shared default came out visibly thinner
+    // than theirs on the same page. These are scaled up to match in real
+    // millimetres and run longer, because they are the pair a child has to
+    // find and push into a connector.
+    const R = 0.09;
+    const LEN = 2.4;
+    g.add(wire(new THREE.Vector3(0, 0.42, -0.95), new THREE.Vector3(0.1, 0.42, -1), WIRE_RED, LEN, R));
+    g.add(wire(new THREE.Vector3(0, -0.42, -0.95), new THREE.Vector3(0.1, -0.42, -1), WIRE_BLACK, LEN, R));
   }
   return g;
 }

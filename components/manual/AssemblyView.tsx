@@ -393,7 +393,12 @@ export function AssemblyView({
       if (inst.builder) {
         // Procedural electronics are authored in their own unit scale, so they
         // get scaled into millimetres and turned to sit in the body frame.
-        const built = ELECTRONIC_BUILDERS[inst.builder]();
+        // The three powered parts take a show-wires flag; the connector's
+        // first argument is its lever state instead, so it is left alone.
+        const built =
+          inst.builder === 'connector'
+            ? ELECTRONIC_BUILDERS.connector()
+            : ELECTRONIC_BUILDERS[inst.builder](!inst.hideWires);
         built.scale.setScalar(inst.scaleMm ?? 1);
         if (inst.euler) built.rotation.set(...inst.euler);
         const wrap = new THREE.Group();
@@ -491,8 +496,11 @@ export function AssemblyView({
         const { q, pos } = poseOf(l.inst, l.inst.reverseArrow ? 1 - t : t);
         l.obj.quaternion.copy(q);
         l.obj.position.copy(pos).sub(BODY_CENTRE);
-        // Hide a moving part until its moment arrives.
-        l.obj.visible = staticPose || !l.moving || elapsed >= a.delaySec - 0.05;
+        // Hide a moving part until its moment arrives. `appearAt` separates
+        // being on screen from starting to move, so the motor can be held in
+        // shot while the spindle caps are drawn out of its shafts.
+        const showAt = a.appearAt ?? a.delaySec - 0.05;
+        l.obj.visible = staticPose || !l.moving || elapsed >= showAt;
       }
       if (pendingRefit) {
         // Poses are applied above, so the bounding boxes are meaningful now.
