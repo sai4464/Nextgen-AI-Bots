@@ -1,0 +1,14 @@
+# Keep LF in the repo on every OS. Without this, Git for Windows checks files
+# out with CRLF and a save from a Windows editor shows every line as changed.
+* text=auto eol=lf
+
+# Binary assets: never touch their bytes.
+*.png binary
+*.jpg binary
+*.JPG binary
+*.jpeg binary
+*.gif binary
+*.heic binary
+*.HEIC binary
+*.pdf binary
+*.stl binary
